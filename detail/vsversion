@@ -1,0 +1,9 @@
+#!/bin/bash
+
+solution_path=$1
+
+version_line=$(grep "\<VisualStudioVersion\>" "$solution_path")
+version_field=${version_line##* }
+version=${version_field%%.*}
+printf '%s\n' "$version"
+

@@ -1,0 +1,92 @@
+#!/bin/bash
+
+
+source vdev/detail/utils
+
+
+help_message=\
+'Usage:
+	vdev/init [guest_name] [user] [password] [solution_path]
+'
+
+
+if [ $# -ne 4 ]
+then
+	printf '-- virtual-dev error: wrong number of arguments\n' >&2
+	printf '%s\n' "$help_message" >&2
+	exit 1
+fi
+
+
+#
+# Parameters & variables
+guest_name=$1 # guest machine name
+user=$2 # guest user
+password=$3 # guest password
+solution_path=$4 # Visual Studio solution file
+
+project_path=$(pwd)
+solution_file_name=$(basename "$solution_path")
+solution_dir=$(dirname "$solution_path")
+project_name=${solution_file_name%.*}
+vs_version=$(vdev/detail/vsversion "$solution_path")
+
+
+#
+# VirtualBox shared folder
+printf 'Creating working directory on \"%s\"...\n' "$guest_name"
+try VBoxManage sharedfolder add "$guest_name" --name "$project_name" --hostpath "$project_path" --automount 1> /dev/null
+catch print_vdev_error "failed to create shared folder"
+
+printf 'Waiting for \"%s\" to start...\n' "$guest_name"
+try vdev/detail/startvm "$guest_name" "$user" "$password"
+catch print_vdev_error "failed to start \"$guest_name\""
+
+printf 'Waiting for "net" to be available (requires \"%s\" to login)...\n' "$user"
+output=$(try vdev/detail/finddisk "$guest_name" "$user" "$password")
+catch print_vdev_error "failed to find shared disk with project"
+
+guest_shared_disk="$output"
+
+
+#
+# Configuration
+printf 'Creating configuration...\n'
+
+vdev_conf="vdev/conf"
+rm -rf "$vdev_conf"
+mkdir "$vdev_conf"
+
+
+vdev_conf_vm="$vdev_conf/vm"
+
+conf_add "$vdev_conf_vm" 'guest_name' "$guest_name"
+conf_add "$vdev_conf_vm" 'user' "$user"
+conf_add "$vdev_conf_vm" 'password' "$password"
+
+
+vdev_conf_paths="$vdev_conf/paths"
+
+conf_add "$vdev_conf_paths" 'vs_version' "$vs_version"
+conf_add "$vdev_conf_paths" 'solution_path' "$solution_path"
+conf_add "$vdev_conf_paths" 'solution_dir' "$solution_dir"
+
+conf_add "$vdev_conf_paths" 'guest_dir' 'vdev/guest/'
+conf_add "$vdev_conf_paths" 'vsprojprop_output_file' 'vsprojprop.txt'
+conf_add "$vdev_conf_paths" 'vsprojprop_output_path' '$guest_dir/$vsprojprop_output_file'
+conf_add "$vdev_conf_paths" 'build_log_file' 'build_output.txt'
+conf_add "$vdev_conf_paths" 'build_log_path' '$guest_dir/$build_log_file'
+
+conf_add "$vdev_conf_paths" 'guest_root_dir' "$guest_shared_disk"
+conf_add "$vdev_conf_paths" 'guest_solution_dir' '$guest_root_dir\\'"$solution_dir"
+conf_add "$vdev_conf_paths" 'guest_solution_path' '$guest_root_dir\\'"$solution_path"
+conf_add "$vdev_conf_paths" 'guest_vdev_guest_dir' '$guest_root_dir\\vdev\\guest\\'
+conf_add "$vdev_conf_paths" 'guest_vsprojprop_output_path' '$guest_vdev_guest_dir\\$vsprojprop_output_file'
+conf_add "$vdev_conf_paths" 'guest_build_log_path' '$guest_vdev_guest_dir\\$build_log_file'
+conf_add "$vdev_conf_paths" 'guest_vsprojprop_bat' '$guest_vdev_guest_dir\\vsprojprop.bat'
+conf_add "$vdev_conf_paths" 'guest_build_bat' '$guest_vdev_guest_dir\\build.bat'
+conf_add "$vdev_conf_paths" 'guest_run_bat' '$guest_vdev_guest_dir\\run.bat'
+
+
+printf 'Done\n'
+

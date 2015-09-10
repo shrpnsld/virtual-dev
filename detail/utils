@@ -1,0 +1,66 @@
+try()
+{
+	rm -f "vdev/error_buffer"
+
+	output=$("$@" 2>&1)
+	if [ $? -ne 0 ]
+	then
+		printf "$output" > "vdev/error_buffer"
+		return 1
+	fi
+
+	if [ ! -z "$output" ]
+	then
+		printf "%s\n" "$output"
+	fi
+}
+
+
+catch()
+{
+	if [ $? -eq 0 ]
+	then
+		return 0
+	fi
+
+	"$@"
+
+	exit 1
+}
+
+
+print_vdev_error()
+{
+	message=$1
+
+	printf '** virtual-dev error: %s\n' "$message" >&2
+
+	error_buffer=$(cat "vdev/error_buffer")
+	printf 'details:\n%s\n\n' "$error_buffer" >&2
+
+	rm -f vdev/error_buffer
+}
+
+
+conf_add()
+{
+	file=$1
+	key=$2
+	value=$3
+
+	printf '%s="%s"\n' "$key" "$value" >> "$file"
+}
+
+
+dos2unix_eoln()
+{
+	cat "$1" | tr -d "\r"
+}
+
+
+dos2unix_path()
+{
+	dos_path=$1
+	sed 's/\\/\//g' <<< $dos_path
+}
+
