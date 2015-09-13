@@ -64,3 +64,19 @@ dos2unix_path()
 	sed 's/\\/\//g' <<< $dos_path
 }
 
+
+escape_backslashes()
+{
+	dos_path=$1
+
+	sed 's/\\/\\\\/g' <<< $dos_path
+}
+
+
+unquote()
+{
+	quoted=$1
+	unquoted=${quoted:1:${#quoted}-2}
+	printf "%s\n" "$unquoted"
+}
+

@@ -1,0 +1,40 @@
+#!/bin/bash
+
+source vdev/detail/utils
+
+solution_path=$1
+target=$2
+configuration=$3
+properties_path=$4
+
+projects_path="vdev/conf/projects"
+vdev/detail/loadprojpaths "$solution_path" "$projects_path"
+source "$projects_path"
+
+solution_dir=$(dirname "$solution_path")
+project_relative_path="${!target}"
+project_path="$solution_dir/$project_relative_path"
+
+if [ "$project_path" -nt "$properties_path" ]
+then
+	printf 'Caching "%s" properties...\n' "$target.vcxproj"
+
+	out_dir=$(try vdev/detail/vsprojprop "$solution_path" "$target" "$configuration" "OutDir")
+	catch print_vdev_error "failed to get property"
+	out_dir=$(escape_backslashes "$out_dir")
+
+	name=$(try vdev/detail/vsprojprop "$solution_path" "$target" "$configuration" "TargetName")
+	catch print_vdev_error "failed to get property"
+
+	extension=$(try vdev/detail/vsprojprop "$solution_path" "$target" "$configuration" "TargetExt")
+	catch print_vdev_error "failed to get property"
+
+	rm -f "$properties_path"
+	touch "$properties_path"
+	conf_add "$properties_path" 'out_dir' "$out_dir"
+	conf_add "$properties_path" 'name' "$name"
+	conf_add "$properties_path" 'extension' "$extension"
+
+	printf 'Done.\n\n'
+fi
+

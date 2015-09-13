@@ -7,17 +7,11 @@ source vdev/detail/utils
 target=$1
 configuration=$2
 
-out_dir=$(try vdev/detail/vsprojprop "$solution_path" "$target" "$configuration" "OutDir")
-catch print_vdev_error "failed to get property"
-
-name=$(try vdev/detail/vsprojprop "$solution_path" "$target" "$configuration" "TargetName")
-catch print_vdev_error "failed to get property"
-
-extension=$(try vdev/detail/vsprojprop "$solution_path" "$target" "$configuration" "TargetExt")
-catch print_vdev_error "failed to get property"
+properties_path="vdev/conf/$target-$configuration"
+vdev/detail/loadprojprops "$solution_path" "$target" "$configuration" "$properties_path"
+source "$properties_path"
 
 binary_name="$name$extension"
-
 try vdev/detail/execute "$guest_name" "$user" "$password" "$guest_run_bat" "$guest_solution_dir" "$out_dir" "$binary_name"
 catch print_vdev_error "failed to run target \"$target\" ($configuration)"
 

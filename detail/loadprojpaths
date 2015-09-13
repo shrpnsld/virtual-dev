@@ -1,0 +1,23 @@
+#!/bin/bash
+
+source vdev/detail/utils
+
+solution_path=$1
+solution_cache=$2
+
+if [ "$solution_path" -nt "$solution_cache" ]
+then
+	printf 'Caching projects'"'"' paths...\n'
+
+	projects=$(grep 'Project(.*) = ' "$solution_path")
+	while read -r project
+	do
+		fields=${project#*= }
+		project_name=$(unquote $(awk -F', ' '{ print $1 }' <<< "$fields"))
+		project_path=$(dos2unix_path $(unquote $(awk -F', ' '{ print $2 }' <<< "$fields")))
+		conf_add "$solution_cache" "$project_name" "$project_path"
+	done <<< "$projects"
+
+	printf "Done.\n\n"
+fi
+
