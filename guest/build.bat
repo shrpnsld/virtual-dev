@@ -7,9 +7,5 @@ set VCVARSALL="%ProgramFiles(x86)%\Microsoft Visual Studio %VS_VERSION%.0\VC\vcv
 
 call %VCVARSALL%
 
-rem WTF?!
-call :build > %BUILD_LOG_FILE%
-
-:build
-	msbuild /nologo %SOLUTION_PATH% /target:%TARGET% /property:configuration=%CONFIGURATION%
+msbuild /nologo %SOLUTION_PATH% /target:%TARGET% /property:configuration=%CONFIGURATION% | for /f "usebackq delims=" %%l in (`more`) do @echo %%l
 

@@ -8,9 +8,9 @@ source vdev/detail/utils
 target=$1
 configuration=$2
 
-rm -f "$build_log_path"
-try vdev/detail/execute "$guest_name" "$user" "$password" "$guest_build_bat" "$vs_version" "$guest_solution_path" "$target" "$configuration" "$guest_build_log_path" > /dev/null
-catch print_vdev_error "failed to build \"$target\" ($configuration)"
+vdev/detail/execute "$guest_name" "$user" "$password" "$guest_build_bat" "$vs_version" "$guest_solution_path" "$target" "$configuration" "$guest_build_log_path"
+retval=$?
+printf '\n'
 
-dos2unix_eoln "$build_log_path"
+exit $retval
 

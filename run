@@ -12,6 +12,9 @@ vdev/detail/loadprojprops "$solution_path" "$target" "$configuration" "$properti
 source "$properties_path"
 
 binary_name="$name$extension"
-try vdev/detail/execute "$guest_name" "$user" "$password" "$guest_run_bat" "$guest_solution_dir" "$out_dir" "$binary_name"
-catch print_vdev_error "failed to run target \"$target\" ($configuration)"
+vdev/detail/execute "$guest_name" "$user" "$password" "$guest_run_bat" "$guest_solution_dir" "$out_dir" "$binary_name"
+retval=$?
+printf "\n" # if put newline in Windows then it can be swallowed
+
+exit $retval
 
