@@ -1,0 +1,8 @@
+#!/bin/bash
+
+source vdev/detail/utils
+source_existing "vdev/conf/vm"
+
+
+"$vm_manage" guestcontrol "$guest_name" execute --image "cmd.exe" --username "$user" --password "$password" --wait-exit --wait-stdout --wait-stderr "/E:ON" "/Q" "/C" "$@"
+

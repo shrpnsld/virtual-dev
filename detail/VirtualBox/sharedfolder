@@ -1,0 +1,11 @@
+#!/bin/bash
+
+source vdev/detail/utils
+source_existing "vdev/conf/vm"
+
+
+name=$1
+path=$2
+
+"$vm_manage" sharedfolder add "$guest_name" --name "$name" --hostpath "$path" --automount
+

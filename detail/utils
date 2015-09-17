@@ -83,3 +83,13 @@ unquote()
 	printf "%s\n" "$unquoted"
 }
 
+
+source_existing()
+{
+	file=$1
+	if [ -f "$file" ]
+	then
+		source "$file"
+	fi
+}
+

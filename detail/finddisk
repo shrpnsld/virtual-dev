@@ -3,18 +3,13 @@
 source vdev/detail/utils
 
 
-guest_name=$1
-user=$2
-password=$3
-
-
 id=$(vdev/detail/generateid)
 trap "rm -f \"vdev/$id\"" EXIT
 
 # waiting for the service to be available
 while [ true ]
 do
-	output=$(vdev/detail/execute "$guest_name" "$user" "$password" net use)
+	output=$(vdev/detail/"$vm"/execute net use)
 	if [ $? -eq 1 ]
 	then
 		exit 1
@@ -33,7 +28,7 @@ done
 # searching disk with current project
 while read -r disk
 do
-	output=$(vdev/detail/execute "$guest_name" "$user" "$password" "if exist $disk\\vdev\\$id (echo 1) else (echo 0)") || exit 1
+	output=$(vdev/detail/"$vm"/execute "if exist $disk\\vdev\\$id (echo 1) else (echo 0)") || exit 1
 
 	retval="$output"
 	if [ $retval = "1" ]

@@ -24,7 +24,7 @@ sed '/<Project[[:>:]].*/a\
 <Target Name="VDevGetProperty"><Message Text="'"$property_line"'$('"$property"')"/></Target>
 ' "$solution_dir/$project_path" > "$solution_dir/$working_project_file"
 
-vdev/detail/execute "$guest_name" "$user" "$password" "$guest_vsprojprop_bat" "$vs_version" "$guest_solution_dir\\$working_project_file" "VDevGetProperty" "$configuration" "$guest_vsprojprop_output_path" || exit 1
+vdev/detail/"$vm"/execute "$guest_vsprojprop_bat" "$vs_version" "$guest_solution_dir\\$working_project_file" "VDevGetProperty" "$configuration" "$guest_vsprojprop_output_path" || exit 1
 
 output=$(dos2unix_eoln "$vsprojprop_output_path")
 line=$(grep "$property_line" <<< "$output")
