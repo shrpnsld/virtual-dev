@@ -31,14 +31,17 @@ catch()
 
 print_vdev_error()
 {
-	message=$1
-
+	message=$(printf "$@")
 	printf '** virtual-dev error: %s\n' "$message" >&2
 
-	error_buffer=$(cat "vdev/error_buffer")
-	printf 'details:\n%s\n\n' "$error_buffer" >&2
+	if [ -f "vdev/error_buffer" ]
+	then
+		error_buffer=$(cat "vdev/error_buffer")
+		printf 'details:\n%s\n' "$error_buffer" >&2
+		rm -f vdev/error_buffer
+	fi
 
-	rm -f vdev/error_buffer
+	printf '\n'
 }
 
 
