@@ -4,7 +4,7 @@ source detail/utils
 
 
 id=$(detail/generateid)
-trap "rm -f \"vdev/$id\"" EXIT
+trap "rm -f \"$id\"" EXIT
 
 # waiting for the service to be available
 while [ true ]
