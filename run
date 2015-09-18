@@ -1,18 +1,18 @@
 #!/bin/bash
 
-source vdev/conf/vm
-source vdev/conf/paths
-source vdev/detail/utils
+source conf/vm
+source conf/paths
+source detail/utils
 
 target=$1
 configuration=$2
 
-properties_path="vdev/conf/$target-$configuration"
-vdev/detail/loadprojprops "$solution_path" "$target" "$configuration" "$properties_path"
+properties_path="conf/$target-$configuration"
+detail/loadprojprops "$solution_path" "$target" "$configuration" "$properties_path"
 source "$properties_path"
 
 binary_name="$name$extension"
-vdev/detail/"$vm"/execute "$guest_run_bat" "$guest_solution_dir" "$out_dir" "$binary_name"
+detail/"$vm"/execute "$guest_run_bat" "$guest_solution_dir" "$out_dir" "$binary_name"
 retval=$?
 printf "\n" # if put newline in Windows then it can be swallowed
 

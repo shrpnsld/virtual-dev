@@ -1,12 +1,12 @@
 #!/bin/bash
 
 
-source vdev/detail/utils
+source detail/utils
 
 
 help_message=\
 'Usage:
-	vdev/init [guest_name] [user] [password] [solution_path]
+	init [guest_name] [user] [password] [solution_path]
 '
 
 
@@ -39,21 +39,21 @@ project_path=$(pwd)
 solution_file_name=$(basename "$solution_path")
 solution_dir=$(dirname "$solution_path")
 project_name=${solution_file_name%.*}
-vs_version=$(vdev/detail/vsversion "$solution_path")
+vs_version=$(detail/vsversion "$solution_path")
 
 
 #
 # VirtualBox shared folder
 printf 'Creating working directory on \"%s\"...\n' "$guest_name"
-try vdev/detail/"$vm"/sharedfolder "$project_name" "$project_path" 1> /dev/null
+try detail/"$vm"/sharedfolder "$project_name" "$project_path" 1> /dev/null
 catch print_vdev_error "failed to create shared folder"
 
 printf 'Waiting for \"%s\" to start...\n' "$guest_name"
-try vdev/detail/"$vm"/startvm
+try detail/"$vm"/startvm
 catch print_vdev_error "failed to start \"$guest_name\""
 
 printf 'Waiting for "net" to be available (requires \"%s\" to login)...\n' "$user"
-output=$(try vdev/detail/finddisk)
+output=$(try detail/finddisk)
 catch print_vdev_error "failed to find shared disk with project"
 
 guest_shared_disk="$output"
@@ -63,7 +63,7 @@ guest_shared_disk="$output"
 # Configuration
 printf 'Creating configuration...\n'
 
-vdev_conf="vdev/conf"
+vdev_conf="conf"
 rm -rf "$vdev_conf"
 mkdir "$vdev_conf"
 
@@ -83,11 +83,9 @@ conf_add "$vdev_conf_paths" 'vs_version' "$vs_version"
 conf_add "$vdev_conf_paths" 'solution_path' "$solution_path"
 conf_add "$vdev_conf_paths" 'solution_dir' "$solution_dir"
 
-conf_add "$vdev_conf_paths" 'guest_dir' 'vdev/guest/'
+conf_add "$vdev_conf_paths" 'guest_dir' 'guest/'
 conf_add "$vdev_conf_paths" 'vsprojprop_output_file' 'vsprojprop.txt'
 conf_add "$vdev_conf_paths" 'vsprojprop_output_path' '$guest_dir/$vsprojprop_output_file'
-conf_add "$vdev_conf_paths" 'build_log_file' 'build_output.txt'
-conf_add "$vdev_conf_paths" 'build_log_path' '$guest_dir/$build_log_file'
 
 conf_add "$vdev_conf_paths" 'guest_root_dir' "$guest_shared_disk"
 conf_add "$vdev_conf_paths" 'guest_solution_dir' '$guest_root_dir\\'"$solution_dir"

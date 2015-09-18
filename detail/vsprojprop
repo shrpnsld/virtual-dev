@@ -1,8 +1,8 @@
 #!/bin/bash
 
-source vdev/conf/vm
-source vdev/conf/paths
-source vdev/detail/utils
+source conf/vm
+source conf/paths
+source detail/utils
 
 
 property_line="virtual-dev property: "
@@ -13,7 +13,7 @@ configuration=$3
 property=$4
 
 solution_dir=$(dirname "$solution_path")
-project_path=$(vdev/detail/vsprojpath "$solution_path" "$target") || exit 1
+project_path=$(detail/vsprojpath "$solution_path" "$target") || exit 1
 project_file=$(basename "$project_path")
 working_project_file="${project_file%.*}.vdev"
 
@@ -24,7 +24,7 @@ sed '/<Project[[:>:]].*/a\
 <Target Name="VDevGetProperty"><Message Text="'"$property_line"'$('"$property"')"/></Target>
 ' "$solution_dir/$project_path" > "$solution_dir/$working_project_file"
 
-vdev/detail/"$vm"/execute "$guest_vsprojprop_bat" "$vs_version" "$guest_solution_dir\\$working_project_file" "VDevGetProperty" "$configuration" "$guest_vsprojprop_output_path" || exit 1
+detail/"$vm"/execute "$guest_vsprojprop_bat" "$vs_version" "$guest_solution_dir\\$working_project_file" "VDevGetProperty" "$configuration" "$guest_vsprojprop_output_path" || exit 1
 
 output=$(dos2unix_eoln "$vsprojprop_output_path")
 line=$(grep "$property_line" <<< "$output")

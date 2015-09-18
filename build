@@ -1,14 +1,14 @@
 #!/bin/bash
 
-source vdev/conf/vm
-source vdev/conf/paths
-source vdev/detail/utils
+source conf/vm
+source conf/paths
+source detail/utils
 
 
 target=$1
 configuration=$2
 
-vdev/detail/"$vm"/execute "$guest_build_bat" "$vs_version" "$guest_solution_path" "$target" "$configuration" "$guest_build_log_path"
+detail/"$vm"/execute "$guest_build_bat" "$vs_version" "$guest_solution_path" "$target" "$configuration" "$guest_build_log_path"
 retval=$?
 printf '\n'
 

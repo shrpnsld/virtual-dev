@@ -1,11 +1,11 @@
 try()
 {
-	rm -f "vdev/error_buffer"
+	rm -f "error_buffer"
 
 	output=$("$@" 2>&1)
 	if [ $? -ne 0 ]
 	then
-		printf "$output" > "vdev/error_buffer"
+		printf "$output" > "error_buffer"
 		return 1
 	fi
 
@@ -34,11 +34,11 @@ print_vdev_error()
 	message=$(printf "$@")
 	printf '** virtual-dev error: %s\n' "$message" >&2
 
-	if [ -f "vdev/error_buffer" ]
+	if [ -f "error_buffer" ]
 	then
-		error_buffer=$(cat "vdev/error_buffer")
+		error_buffer=$(cat "error_buffer")
 		printf 'details:\n%s\n' "$error_buffer" >&2
-		rm -f vdev/error_buffer
+		rm -f error_buffer
 	fi
 
 	printf '\n'

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source vdev/detail/utils
+source detail/utils
 
 
 solution_path=$1

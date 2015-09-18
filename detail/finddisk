@@ -1,15 +1,15 @@
 #!/bin/bash
 
-source vdev/detail/utils
+source detail/utils
 
 
-id=$(vdev/detail/generateid)
+id=$(detail/generateid)
 trap "rm -f \"vdev/$id\"" EXIT
 
 # waiting for the service to be available
 while [ true ]
 do
-	output=$(vdev/detail/"$vm"/execute net use)
+	output=$(detail/"$vm"/execute net use)
 	if [ $? -eq 1 ]
 	then
 		exit 1
@@ -28,7 +28,7 @@ done
 # searching disk with current project
 while read -r disk
 do
-	output=$(vdev/detail/"$vm"/execute "if exist $disk\\vdev\\$id (echo 1) else (echo 0)") || exit 1
+	output=$(detail/"$vm"/execute "if exist $disk\\vdev\\$id (echo 1) else (echo 0)") || exit 1
 
 	retval="$output"
 	if [ $retval = "1" ]

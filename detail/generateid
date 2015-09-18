@@ -1,7 +1,7 @@
 #!/bin/bash
 
 id=id$RANDOM
-touch vdev/$id
+touch $id
 
 printf '%s\n' $id
 

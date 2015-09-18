@@ -1,7 +1,7 @@
 #!/bin/bash
 
-source vdev/detail/utils
-source_existing "vdev/conf/vm"
+source detail/utils
+source_existing "conf/vm"
 
 
 name=$1
