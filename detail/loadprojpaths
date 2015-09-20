@@ -1,6 +1,7 @@
 #!/bin/bash
 
 source detail/utils
+source detail/dictionary
 
 solution_path=$1
 solution_cache=$2
@@ -15,7 +16,7 @@ then
 		fields=${project#*= }
 		project_name=$(unquote $(awk -F', ' '{ print $1 }' <<< "$fields"))
 		project_path=$(dos2unix_path $(unquote $(awk -F', ' '{ print $2 }' <<< "$fields")))
-		conf_add "$solution_cache" "$project_name" "$project_path"
+		dictionary_insert "$solution_cache" "$project_name" "$project_path"
 	done <<< "$projects"
 
 	printf "Done.\n\n"

@@ -1,0 +1,29 @@
+dictionary_find()
+{
+	array=$1
+	key=$2
+
+	record=$(grep "^$key=" "$array")
+	printf '%s\n' "${record#*=}"
+}
+
+
+dictionary_insert()
+{
+	array=$1
+	key=$2
+	value=$3
+
+	if [ -f "$array" ]
+	then
+		array_tmp="$array.tmp"
+		trap "rm -f \"$array_tmp\"" EXIT
+
+		grep -v "^$key=" "$array" > "$array_tmp"
+		cat "$array_tmp" > "$array"
+	fi
+
+	printf '%s=%s\n' "$key" "$value" >> "$array"
+}
+
+

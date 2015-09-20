@@ -1,6 +1,7 @@
 #!/bin/bash
 
 source detail/utils
+source detail/dictionary
 
 solution_path=$1
 target=$2
@@ -9,10 +10,9 @@ properties_path=$4
 
 projects_path="conf/projects"
 detail/loadprojpaths "$solution_path" "$projects_path"
-source "$projects_path"
 
 solution_dir=$(dirname "$solution_path")
-project_relative_path="${!target}"
+project_relative_path=$(dictionary_find "$projects_path" "$target")
 project_path="$solution_dir/$project_relative_path"
 
 if [ "$project_path" -nt "$properties_path" ]
