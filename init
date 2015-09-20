@@ -35,7 +35,7 @@ VirtualBox=VBoxManage
 export vm="VirtualBox"
 export vm_manage=$(which "${!vm}")
 
-project_path=$(pwd)
+project_root="$(dirname $(pwd))"
 solution_file_name=$(basename "$solution_path")
 solution_dir=$(dirname "$solution_path")
 project_name=${solution_file_name%.*}
@@ -45,7 +45,7 @@ vs_version=$(detail/vsversion "$solution_path")
 #
 # VirtualBox shared folder
 printf 'Creating working directory on \"%s\"...\n' "$guest_name"
-try detail/"$vm"/sharedfolder "$project_name" "$project_path" 1> /dev/null
+try detail/"$vm"/sharedfolder "$project_name" "$project_root" 1> /dev/null
 catch print_vdev_error "failed to create shared folder"
 
 printf 'Waiting for \"%s\" to start...\n' "$guest_name"
@@ -90,7 +90,7 @@ conf_add "$vdev_conf_paths" 'vsprojprop_output_path' '$guest_dir/$vsprojprop_out
 conf_add "$vdev_conf_paths" 'guest_root_dir' "$guest_shared_disk"
 conf_add "$vdev_conf_paths" 'guest_solution_dir' '$guest_root_dir\\'"$solution_dir"
 conf_add "$vdev_conf_paths" 'guest_solution_path' '$guest_root_dir\\'"$solution_path"
-conf_add "$vdev_conf_paths" 'guest_vdev_guest_dir' '$guest_root_dir\\vdev\\guest\\'
+conf_add "$vdev_conf_paths" 'guest_vdev_guest_dir' '$guest_root_dir\\virtual-dev\\guest\\'
 conf_add "$vdev_conf_paths" 'guest_vsprojprop_output_path' '$guest_vdev_guest_dir\\$vsprojprop_output_file'
 conf_add "$vdev_conf_paths" 'guest_build_log_path' '$guest_vdev_guest_dir\\$build_log_file'
 conf_add "$vdev_conf_paths" 'guest_vsprojprop_bat' '$guest_vdev_guest_dir\\vsprojprop.bat'

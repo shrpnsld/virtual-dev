@@ -28,7 +28,7 @@ done
 # searching disk with current project
 while read -r disk
 do
-	output=$(detail/"$vm"/execute "if exist $disk\\vdev\\$id (echo 1) else (echo 0)") || exit 1
+	output=$(detail/"$vm"/execute "if exist $disk\\virtual-dev\\$id (echo 1) else (echo 0)") || exit 1
 
 	retval="$output"
 	if [ $retval = "1" ]
