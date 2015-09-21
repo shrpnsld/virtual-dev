@@ -3,9 +3,10 @@
 source detail/utils
 
 
-id=$(detail/generateid)
-trap "rm -f \"$id\"" EXIT
+id_dir=$1
 
+
+#
 # waiting for the service to be available
 while [ true ]
 do
@@ -25,13 +26,18 @@ do
 done
 
 
+#
 # searching disk with current project
+
+id="vdevid$RANDOM"
+id_path="$id_dir/$id"
+touch "$id_path"
+trap "rm -f \"$id_path\"" EXIT
+
 while read -r disk
 do
-	output=$(detail/"$vm"/execute "if exist $disk\\virtual-dev\\$id (echo 1) else (echo 0)") || exit 1
-
-	retval="$output"
-	if [ $retval = "1" ]
+	output=$(detail/"$vm"/execute "if exist $disk\\$id (echo 1) else (echo 0)") || exit 1
+	if [ $output = "1" ]
 	then
 		printf '%s\n' "$disk"
 		break

@@ -1,7 +1,11 @@
 #!/bin/bash
 
-source conf/vm
-source conf/paths
+export working_dir=$(pwd)
+cd $(dirname $0)
+
+
+source "$working_dir/vdevrc/vm"
+source "$working_dir/vdevrc/paths"
 source detail/utils
 
 

@@ -1,12 +1,15 @@
 #!/bin/bash
 
+export working_dir=$(pwd)
+cd $(dirname $0)
+
 
 source detail/utils
 
 
 help_message=\
 'Usage:
-	init [guest_name] [user] [password] [solution_path]
+	./init [solution_path] [guest_name] [user] [password]
 '
 
 
@@ -19,12 +22,14 @@ fi
 
 #
 # Parameters & variables
-export guest_name=$1 # guest machine name
-export user=$2 # guest user
-export password=$3 # guest password
-export solution_path=$4 # Visual Studio solution file
+export solution_path=$1
+export guest_name=$2
+export user=$3
+export password=$4
 
-if [ ! -f "$solution_path" ]
+project_root="$working_dir"
+
+if [ ! -f "$project_root/$solution_path" ]
 then
 	print_vdev_error '"%s" does not exist' "$solution_path"
 	exit 1
@@ -35,11 +40,10 @@ VirtualBox=VBoxManage
 export vm="VirtualBox"
 export vm_manage=$(which "${!vm}")
 
-project_root="$(dirname $(pwd))"
 solution_file_name=$(basename "$solution_path")
 solution_dir=$(dirname "$solution_path")
 project_name=${solution_file_name%.*}
-vs_version=$(detail/vsversion "$solution_path")
+vs_version=$(detail/vsversion "$project_root/$solution_path")
 
 
 #
@@ -53,7 +57,7 @@ try detail/"$vm"/startvm
 catch print_vdev_error "failed to start \"$guest_name\""
 
 printf 'Waiting for "net" to be available (requires \"%s\" to login)...\n' "$user"
-output=$(try detail/finddisk)
+output=$(try detail/finddisk "$project_root")
 catch print_vdev_error "failed to find shared disk with project"
 
 guest_shared_disk="$output"
@@ -63,39 +67,34 @@ guest_shared_disk="$output"
 # Configuration
 printf 'Creating configuration...\n'
 
-vdev_conf="conf"
-rm -rf "$vdev_conf"
-mkdir "$vdev_conf"
+vdevrc_dir_path="$project_root/vdevrc"
+rm -rf "$vdevrc_dir_path"
+mkdir "$vdevrc_dir_path"
+
+cp -R guest "$vdevrc_dir_path/"
+
+vdevrc_vm="$vdevrc_dir_path/vm"
+
+conf_add "$vdevrc_vm" 'vm' "$vm"
+conf_add "$vdevrc_vm" 'vm_manage' "$vm_manage"
+conf_add "$vdevrc_vm" 'guest_name' "$guest_name"
+conf_add "$vdevrc_vm" 'user' "$user"
+conf_add "$vdevrc_vm" 'password' "$password"
 
 
-vdev_conf_vm="$vdev_conf/vm"
+vdevrc_paths="$vdevrc_dir_path/paths"
 
-conf_add "$vdev_conf_vm" 'vm' "$vm"
-conf_add "$vdev_conf_vm" 'vm_manage' "$vm_manage"
-conf_add "$vdev_conf_vm" 'guest_name' "$guest_name"
-conf_add "$vdev_conf_vm" 'user' "$user"
-conf_add "$vdev_conf_vm" 'password' "$password"
+conf_add "$vdevrc_paths" 'vs_version' "$vs_version"
+conf_add "$vdevrc_paths" 'solution_path' "$solution_path"
+conf_add "$vdevrc_paths" 'solution_dir' "$solution_dir"
 
-
-vdev_conf_paths="$vdev_conf/paths"
-
-conf_add "$vdev_conf_paths" 'vs_version' "$vs_version"
-conf_add "$vdev_conf_paths" 'solution_path' "$solution_path"
-conf_add "$vdev_conf_paths" 'solution_dir' "$solution_dir"
-
-conf_add "$vdev_conf_paths" 'guest_dir' 'guest/'
-conf_add "$vdev_conf_paths" 'vsprojprop_output_file' 'vsprojprop.txt'
-conf_add "$vdev_conf_paths" 'vsprojprop_output_path' '$guest_dir/$vsprojprop_output_file'
-
-conf_add "$vdev_conf_paths" 'guest_root_dir' "$guest_shared_disk"
-conf_add "$vdev_conf_paths" 'guest_solution_dir' '$guest_root_dir\\'"$solution_dir"
-conf_add "$vdev_conf_paths" 'guest_solution_path' '$guest_root_dir\\'"$solution_path"
-conf_add "$vdev_conf_paths" 'guest_vdev_guest_dir' '$guest_root_dir\\virtual-dev\\guest\\'
-conf_add "$vdev_conf_paths" 'guest_vsprojprop_output_path' '$guest_vdev_guest_dir\\$vsprojprop_output_file'
-conf_add "$vdev_conf_paths" 'guest_build_log_path' '$guest_vdev_guest_dir\\$build_log_file'
-conf_add "$vdev_conf_paths" 'guest_vsprojprop_bat' '$guest_vdev_guest_dir\\vsprojprop.bat'
-conf_add "$vdev_conf_paths" 'guest_build_bat' '$guest_vdev_guest_dir\\build.bat'
-conf_add "$vdev_conf_paths" 'guest_run_bat' '$guest_vdev_guest_dir\\run.bat'
+conf_add "$vdevrc_paths" 'guest_root_dir' "$guest_shared_disk"
+conf_add "$vdevrc_paths" 'guest_solution_dir' '$guest_root_dir/'"$solution_dir"
+conf_add "$vdevrc_paths" 'guest_solution_path' '$guest_root_dir/'"$solution_path"
+conf_add "$vdevrc_paths" 'guest_vdev_guest_dir' '$guest_root_dir/vdevrc/guest/'
+conf_add "$vdevrc_paths" 'guest_vsprojprop_bat' '$guest_vdev_guest_dir/vsprojprop.bat'
+conf_add "$vdevrc_paths" 'guest_build_bat' '$guest_vdev_guest_dir/build.bat'
+conf_add "$vdevrc_paths" 'guest_run_bat' '$guest_vdev_guest_dir/run.bat'
 
 
 printf 'Done\n'

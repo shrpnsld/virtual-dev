@@ -1,7 +1,0 @@
-#!/bin/bash
-
-id=id$RANDOM
-touch $id
-
-printf '%s\n' $id
-

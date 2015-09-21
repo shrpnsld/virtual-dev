@@ -1,14 +1,18 @@
 #!/bin/bash
 
-source conf/vm
-source conf/paths
+export working_dir=$(pwd)
+cd $(dirname $0)
+
+
+source "$working_dir/vdevrc/vm"
+source "$working_dir/vdevrc/paths"
 source detail/utils
 
 target=$1
 configuration=$2
 
-properties_path="conf/$target-$configuration"
-detail/loadprojprops "$solution_path" "$target" "$configuration" "$properties_path"
+properties_path="$working_dir/vdevrc/$target-$configuration"
+detail/loadprojprops "$working_dir/$solution_path" "$target" "$configuration" "$properties_path"
 source "$properties_path"
 
 binary_name="$name$extension"

@@ -1,7 +1,7 @@
 #!/bin/bash
 
-source conf/vm
-source conf/paths
+source "$working_dir/vdevrc/vm"
+source "$working_dir/vdevrc/paths"
 source detail/utils
 
 
@@ -17,16 +17,12 @@ project_path=$(detail/vsprojpath "$solution_path" "$target") || exit 1
 project_file=$(basename "$project_path")
 working_project_file="${project_file%.*}.vdev"
 
-trap "rm -f \"$solution_dir/$working_project_file\" \"$vsprojprop_output_path\"" EXIT
-
 # sed in OS X is so fucked up %)
 sed '/<Project[[:>:]].*/a\
 <Target Name="VDevGetProperty"><Message Text="'"$property_line"'$('"$property"')"/></Target>
 ' "$solution_dir/$project_path" > "$solution_dir/$working_project_file"
 
-detail/"$vm"/execute "$guest_vsprojprop_bat" "$vs_version" "$guest_solution_dir\\$working_project_file" "VDevGetProperty" "$configuration" "$guest_vsprojprop_output_path" || exit 1
-
-output=$(dos2unix_eoln "$vsprojprop_output_path")
+output=$(detail/"$vm"/execute "$guest_vsprojprop_bat" "$vs_version" "$guest_solution_dir\\$working_project_file" "VDevGetProperty" "$configuration") || exit 1
 line=$(grep "$property_line" <<< "$output")
 
 printf '%s\n' ${line#*$property_line}
