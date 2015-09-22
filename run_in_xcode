@@ -1,0 +1,9 @@
+#!/bin/bash
+
+virtual_dev_dir=$1
+target=$2
+configuration=$3
+
+cd ..
+"$virtual_dev_dir/run" "$target" "$configuration"
+

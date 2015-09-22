@@ -43,6 +43,7 @@ fi
 # for future extensibility
 VirtualBox=VBoxManage
 vm="VirtualBox"
+vm_manage=$(which "${!vm}")
 
 
 vdevrc_dir_path="$project_root/vdevrc"
@@ -53,6 +54,7 @@ mkdir "$vdevrc_dir_path"
 vdevrc_vm="$vdevrc_dir_path/vm"
 
 conf_add "$vdevrc_vm" 'vm' "$vm"
+conf_add "$vdevrc_vm" 'vm_manage' "$vm_manage"
 conf_add "$vdevrc_vm" 'guest_name' "$guest_name"
 conf_add "$vdevrc_vm" 'user' "$user"
 conf_add "$vdevrc_vm" 'password' "$password"
@@ -89,6 +91,7 @@ printf 'Finishing initialization...\n'
 # 'paths' configuration
 
 cp -R guest "$vdevrc_dir_path/"
+cp run_in_xcode "$vdevrc_dir_path/"
 
 vdevrc_paths="$vdevrc_dir_path/paths"
 
