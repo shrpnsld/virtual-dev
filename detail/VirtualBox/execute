@@ -4,5 +4,5 @@ source detail/utils
 source_existing "$working_dir/vdevrc/vm"
 
 
-"$vm_manage" guestcontrol "$guest_name" execute --image "cmd.exe" --username "$user" --password "$password" --wait-exit --wait-stdout --wait-stderr "/E:ON" "/Q" "/C" "$@"
+VBoxManage guestcontrol "$guest_name" execute --image "cmd.exe" --username "$user" --password "$password" --wait-exit --wait-stdout --wait-stderr "/E:ON" "/Q" "/C" "$@"
 

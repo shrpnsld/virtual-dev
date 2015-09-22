@@ -38,7 +38,6 @@ fi
 # for future extensibility
 VirtualBox=VBoxManage
 export vm="VirtualBox"
-export vm_manage=$(which "${!vm}")
 
 solution_file_name=$(basename "$solution_path")
 solution_dir=$(dirname "$solution_path")
@@ -76,7 +75,6 @@ cp -R guest "$vdevrc_dir_path/"
 vdevrc_vm="$vdevrc_dir_path/vm"
 
 conf_add "$vdevrc_vm" 'vm' "$vm"
-conf_add "$vdevrc_vm" 'vm_manage' "$vm_manage"
 conf_add "$vdevrc_vm" 'guest_name' "$guest_name"
 conf_add "$vdevrc_vm" 'user' "$user"
 conf_add "$vdevrc_vm" 'password' "$password"

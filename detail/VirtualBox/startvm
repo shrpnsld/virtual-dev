@@ -4,7 +4,7 @@ source detail/utils
 source_existing "$working_dir/vdevrc/vm"
 
 
-"$vm_manage" startvm "$guest_name" 1> /dev/null || exit 1
+VBoxManage startvm "$guest_name" 1> /dev/null || exit 1
 
 checkstr="running"
 

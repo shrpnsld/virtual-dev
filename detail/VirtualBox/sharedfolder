@@ -7,5 +7,5 @@ source_existing "$working_dir/vdevrc/vm"
 name=$1
 path=$2
 
-"$vm_manage" sharedfolder add "$guest_name" --name "$name" --hostpath "$path" --automount
+VBoxManage sharedfolder add "$guest_name" --name "$name" --hostpath "$path" --automount
 
