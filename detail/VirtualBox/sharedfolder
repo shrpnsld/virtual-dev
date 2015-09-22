@@ -1,7 +1,7 @@
 #!/bin/bash
 
 source detail/utils
-source_existing "$working_dir/vdevrc/vm"
+source "$working_dir/vdevrc/vm"
 
 
 name=$1

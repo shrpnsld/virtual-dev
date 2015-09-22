@@ -22,10 +22,11 @@ fi
 
 #
 # Parameters & variables
-export solution_path=$1
-export guest_name=$2
-export user=$3
-export password=$4
+
+solution_path=$1
+guest_name=$2
+user=$3
+password=$4
 
 project_root="$working_dir"
 
@@ -35,9 +36,27 @@ then
 	exit 1
 fi
 
+
+#
+# 'vm' configuration
+
 # for future extensibility
 VirtualBox=VBoxManage
-export vm="VirtualBox"
+vm="VirtualBox"
+
+
+vdevrc_dir_path="$project_root/vdevrc"
+rm -rf "$vdevrc_dir_path"
+mkdir "$vdevrc_dir_path"
+
+
+vdevrc_vm="$vdevrc_dir_path/vm"
+
+conf_add "$vdevrc_vm" 'vm' "$vm"
+conf_add "$vdevrc_vm" 'guest_name' "$guest_name"
+conf_add "$vdevrc_vm" 'user' "$user"
+conf_add "$vdevrc_vm" 'password' "$password"
+
 
 solution_file_name=$(basename "$solution_path")
 solution_dir=$(dirname "$solution_path")
@@ -46,7 +65,8 @@ vs_version=$(detail/vsversion "$project_root/$solution_path")
 
 
 #
-# VirtualBox shared folder
+# Shared folder
+
 printf 'Creating working directory on \"%s\"...\n' "$guest_name"
 try detail/"$vm"/sharedfolder "$project_name" "$project_root" 1> /dev/null
 catch print_vdev_error "failed to create shared folder"
@@ -62,23 +82,13 @@ catch print_vdev_error "failed to find shared disk with project"
 guest_shared_disk="$output"
 
 
-#
-# Configuration
-printf 'Creating configuration...\n'
+printf 'Finishing initialization...\n'
 
-vdevrc_dir_path="$project_root/vdevrc"
-rm -rf "$vdevrc_dir_path"
-mkdir "$vdevrc_dir_path"
+
+#
+# 'paths' configuration
 
 cp -R guest "$vdevrc_dir_path/"
-
-vdevrc_vm="$vdevrc_dir_path/vm"
-
-conf_add "$vdevrc_vm" 'vm' "$vm"
-conf_add "$vdevrc_vm" 'guest_name' "$guest_name"
-conf_add "$vdevrc_vm" 'user' "$user"
-conf_add "$vdevrc_vm" 'password' "$password"
-
 
 vdevrc_paths="$vdevrc_dir_path/paths"
 
@@ -95,5 +105,5 @@ conf_add "$vdevrc_paths" 'guest_build_bat' '$guest_vdev_guest_dir/build.bat'
 conf_add "$vdevrc_paths" 'guest_run_bat' '$guest_vdev_guest_dir/run.bat'
 
 
-printf 'Done\n'
+printf 'Done.\n'
 

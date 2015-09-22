@@ -1,7 +1,7 @@
 #!/bin/bash
 
 source detail/utils
-source_existing "$working_dir/vdevrc/vm"
+source "$working_dir/vdevrc/vm"
 
 
 VBoxManage guestcontrol "$guest_name" execute --image "cmd.exe" --username "$user" --password "$password" --wait-exit --wait-stdout --wait-stderr "/E:ON" "/Q" "/C" "$@"
