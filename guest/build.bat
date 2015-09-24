@@ -6,5 +6,5 @@ set VCVARSALL="%ProgramFiles(x86)%\Microsoft Visual Studio %VS_VERSION%.0\VC\vcv
 
 call %VCVARSALL%
 
-msbuild /nologo %SOLUTION_PATH% /target:%TARGET% /property:configuration=%CONFIGURATION% | for /f "usebackq delims=" %%l in (`more`) do @echo %%l
-
+(msbuild /nologo %SOLUTION_PATH% /target:%TARGET% /property:configuration=%CONFIGURATION% & call doskey /exename=err err=%%^^errorlevel%%) | for /f "usebackq delims=" %%l in (`more`) do @echo %%l
+for /f "tokens=2 delims==" %%A in ('doskey /m:err') do exit /b %%A
