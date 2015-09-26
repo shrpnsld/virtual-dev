@@ -16,11 +16,13 @@ solution_dir=$(dirname "$solution_path")
 project_path=$(detail/vsprojpath "$solution_path" "$target") || exit 1
 project_file=$(basename "$project_path")
 working_project_file="${project_file%.*}.vdev"
+working_project_file_path="$solution_dir/$working_project_file"
 
 # sed in OS X is so fucked up %)
 sed '/<Project[[:>:]].*/a\
 <Target Name="VDevGetProperty"><Message Text="'"$property_line"'$('"$property"')"/></Target>
-' "$solution_dir/$project_path" > "$solution_dir/$working_project_file"
+' "$solution_dir/$project_path" > "$working_project_file_path"
+trap "rm -f \"$working_project_file_path\"" EXIT
 
 output=$(detail/"$vm"/execute "$guest_vsprojprop_bat" "$vs_version" "$guest_solution_dir\\$working_project_file" "VDevGetProperty" "$configuration") || exit 1
 line=$(grep "$property_line" <<< "$output")
