@@ -9,32 +9,25 @@ source detail/utils
 
 help_message=\
 'Usage:
-	./init [solution_path] [guest_name] [user] [password]
+	./init [guest_name] [user] [password] [solution_paths...]
 '
-
-
-if [ $# -ne 4 ]
-then
-	print_vdev_error 'wrong number of arguments\n%s\n' "$help_message"
-	exit 1
-fi
 
 
 #
 # Parameters & variables
 
-solution_path=$1
-guest_name=$2
-user=$3
-password=$4
-
-project_root="$working_dir"
-
-if [ ! -f "$project_root/$solution_path" ]
+if [ $# -lt 4 ]
 then
-	print_vdev_error '"%s" does not exist' "$solution_path"
+	print_vdev_error 'wrong number of arguments\n%s\n' "$help_message"
 	exit 1
 fi
+
+guest_name=$1
+user=$2
+password=$3
+
+
+project_root="$working_dir"
 
 
 #
@@ -46,12 +39,12 @@ vm="VirtualBox"
 vm_manage=$(which "${!vm}")
 
 
-vdevrc_dir_path="$project_root/vdevrc"
-rm -rf "$vdevrc_dir_path"
-mkdir "$vdevrc_dir_path"
+vdevrc_dir="$project_root/vdevrc"
+rm -rf "$vdevrc_dir"
+mkdir "$vdevrc_dir"
 
 
-vdevrc_vm="$vdevrc_dir_path/vm"
+vdevrc_vm="$vdevrc_dir/vm"
 
 conf_add "$vdevrc_vm" 'vm' "$vm"
 conf_add "$vdevrc_vm" 'vm_manage' "$vm_manage"
@@ -60,14 +53,10 @@ conf_add "$vdevrc_vm" 'user' "$user"
 conf_add "$vdevrc_vm" 'password' "$password"
 
 
-solution_file_name=$(basename "$solution_path")
-solution_dir=$(dirname "$solution_path")
-project_name=${solution_file_name%.*}
-vs_version=$(detail/vsversion "$project_root/$solution_path")
-
-
 #
 # Shared folder
+
+project_name=$(basename "$project_root")
 
 printf 'Creating working directory on \"%s\"...\n' "$guest_name"
 try detail/"$vm"/sharedfolder "$project_name" "$project_root" 1> /dev/null
@@ -90,22 +79,33 @@ printf 'Finishing initialization...\n'
 #
 # 'paths' configuration
 
-cp -R guest "$vdevrc_dir_path/"
-cp run_in_xcode "$vdevrc_dir_path/"
+cp -R guest "$vdevrc_dir/"
+cp run_in_xcode "$vdevrc_dir/"
 
-vdevrc_paths="$vdevrc_dir_path/paths"
+vdevrc_conf="$vdevrc_dir/conf"
 
-conf_add "$vdevrc_paths" 'vs_version' "$vs_version"
-conf_add "$vdevrc_paths" 'solution_path' "$solution_path"
-conf_add "$vdevrc_paths" 'solution_dir' "$solution_dir"
+conf_add "$vdevrc_conf" 'guest_root_dir' "$guest_shared_disk"
+conf_add "$vdevrc_conf" 'guest_vdevrc_guest_dir' '$guest_root_dir/vdevrc/guest/'
+conf_add "$vdevrc_conf" 'guest_vsprojprop_bat' '$guest_vdevrc_guest_dir/vsprojprop.bat'
+conf_add "$vdevrc_conf" 'guest_build_bat' '$guest_vdevrc_guest_dir/build.bat'
+conf_add "$vdevrc_conf" 'guest_run_bat' '$guest_vdevrc_guest_dir/run.bat'
 
-conf_add "$vdevrc_paths" 'guest_root_dir' "$guest_shared_disk"
-conf_add "$vdevrc_paths" 'guest_solution_dir' '$guest_root_dir/'"$solution_dir"
-conf_add "$vdevrc_paths" 'guest_solution_path' '$guest_root_dir/'"$solution_path"
-conf_add "$vdevrc_paths" 'guest_vdev_guest_dir' '$guest_root_dir/vdevrc/guest/'
-conf_add "$vdevrc_paths" 'guest_vsprojprop_bat' '$guest_vdev_guest_dir/vsprojprop.bat'
-conf_add "$vdevrc_paths" 'guest_build_bat' '$guest_vdev_guest_dir/build.bat'
-conf_add "$vdevrc_paths" 'guest_run_bat' '$guest_vdev_guest_dir/run.bat'
+
+for solution_path in ${@:4}
+do
+	if [ ! -f "$project_root/$solution_path" ]
+	then
+		print_vdev_error '"%s" does not exist' "$solution_path"
+		exit 1
+	fi
+
+	solution_info_dir_name=$(sln_info_dir_name $solution_path)
+	vdevrc_solution_info_dir="$vdevrc_dir/$solution_info_dir_name"
+	mkdir "$vdevrc_solution_info_dir"
+
+	vs_version=$(detail/vsversion "$project_root/$solution_path")
+	printf '%s\n' "$vs_version" > "$vdevrc_solution_info_dir/vs_version"
+done
 
 
 printf 'Done.\n'

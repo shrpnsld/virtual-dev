@@ -5,14 +5,21 @@ cd $(dirname $0)
 
 
 source "$working_dir/vdevrc/vm"
-source "$working_dir/vdevrc/paths"
+source "$working_dir/vdevrc/conf"
 source detail/utils
 
 
-target=$1
-configuration=$2
+solution_path=$1
+target=$2
+configuration=$3
 
-detail/"$vm"/execute "$guest_build_bat" "$vs_version" "$guest_solution_path" "$target" "$configuration" "$guest_build_log_path"
+
+solution_info_dir=$(sln_info_dir_name "$solution_path")
+vs_version_path="$working_dir/vdevrc/$solution_info_dir/vs_version"
+vs_version=$(cat "$vs_version_path")
+
+guest_solution_path="$guest_root_dir/$solution_path"
+detail/"$vm"/execute "$guest_build_bat" "$vs_version" "$guest_solution_path" "$target" "$configuration"
 retval=$?
 printf '\n'
 

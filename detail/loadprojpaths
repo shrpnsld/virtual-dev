@@ -3,8 +3,10 @@
 source detail/utils
 source detail/dictionary
 
+
 solution_path=$1
 solution_cache=$2
+
 
 if [ "$solution_path" -nt "$solution_cache" ]
 then

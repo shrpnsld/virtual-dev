@@ -6,6 +6,7 @@ source detail/utils
 solution_path=$1
 project_name=$2
 
+
 record=$(grep 'Project(.*) = "'"$project_name"'".*' "$solution_path")
 fields=${record#*= }
 quoted=$(awk -F', ' '{ print $2 }' <<< "$fields")

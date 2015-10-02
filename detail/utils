@@ -83,3 +83,10 @@ unquote()
 	printf "%s\n" "$unquoted"
 }
 
+
+sln_info_dir_name()
+{
+	path=$1
+	sed 's/\//\./g' <<< "$path"
+}
+

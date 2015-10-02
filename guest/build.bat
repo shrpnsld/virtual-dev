@@ -4,7 +4,7 @@ set TARGET=%3
 set CONFIGURATION=%4
 set VCVARSALL="%ProgramFiles(x86)%\Microsoft Visual Studio %VS_VERSION%.0\VC\vcvarsall.bat"
 
-call %VCVARSALL%
+call %VCVARSALL% || exit 1
 
 (msbuild /nologo %SOLUTION_PATH% /target:%TARGET% /property:configuration=%CONFIGURATION% & call doskey /exename=err err=%%^^errorlevel%%) | for /f "usebackq delims=" %%l in (`more`) do @echo %%l
 for /f "tokens=2 delims==" %%A in ('doskey /m:err') do exit /b %%A

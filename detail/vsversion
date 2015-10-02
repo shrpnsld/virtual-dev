@@ -2,8 +2,13 @@
 
 solution_path=$1
 
-version_line=$(grep "\<VisualStudioVersion\>" "$solution_path")
-version_field=${version_line##* }
-version=${version_field%%.*}
-printf '%s\n' "$version"
+
+vs2010=10
+vs2012=11
+vs2013=12
+
+version_line=$(grep '^#.*[0-9]\{4\}.*' "$solution_path")
+version=$(grep -o '[0-9]\{4\}' <<< $version_line)
+version_variable="vs$version"
+printf '%s\n' "${!version_variable}"
 
