@@ -12,35 +12,39 @@ Requires VirtualBox with guest additions, installed Windows and Visual Studio.
 ```bash
 $ git clone https://github.com/shrpnsld/virtual-dev/ # Can be cloned anywhere
 $ cd Project/Root/
-$ Path/To/virtual-dev/init Path/To/Solution.sln VMName Username password123 # Set up
-$ Path/To/virtual-dev/build Project Debug # Build project
-$ Path/To/virtual-dev/run Project Debug # Run project
+$ Path/To/virtual-dev/init VMName Username password123 Paths/To/Solutions.sln... # Set up
+$ Path/To/virtual-dev/build Path/To/Solution.sln Project Debug # Build project
+$ Path/To/virtual-dev/run Path/To/Solution.sln Project Debug # Run project
 ```
 
 `init` will add shared folder using the solution name and `Project/Root/`, start the virtual machine and wait for user to login, then it will get and generate all configuration it needs.
 
 
 
-# Integration with Xcode
+# Using with Xcode
 
 Projects in the Visual Studio solution correspond to Xcode targets. Thus to build specific Visual Studio project an external build system target should be set up in the Xcode project.
 
 This target should have following settings:
 * Build Tool: `/Absolute/Path/To/virtual-dev/build`
-* Arguments: `$(TARGETNAME)` `$(CONFIGURATION)`
+* Arguments: `Path/To/Solution.sln` `Project` `$(CONFIGURATION)`
 * Directory: `/Absolute/Project/Root/`
 
 ![](./img/ExternalBuildToolConfiguration.png)
 
 To run target it's scheme should have following settings:
-* Executable: `/Absolute/Project/Root/vdevrc/run_in_xcode`
+* Executable: `/Absolute/Path/To/virtual-dev/run`
 * Option 'Debug executable' should be turned off
 
 ![](./img/SchemeRunInfo.png)
 
-* Arguments: `/Absolute/Path/To/virtual-dev/` `$(TARGETNAME)` `$(CONFIGURATION)`.
+* Arguments: `/Absolute/Path/To/virtual-dev/`, `$(TARGETNAME)` and `$(CONFIGURATION)`
 
 ![](./img/SchemeRunArguments.png)
+
+* Working Directory: `/Absolute/Project/Root/`
+
+![](./img/SchemeRunOptions.png)
 
 
 
