@@ -80,7 +80,6 @@ printf 'Finishing initialization...\n'
 # 'paths' configuration
 
 cp -R guest "$vdevrc_dir/"
-cp run_in_xcode "$vdevrc_dir/"
 
 vdevrc_conf="$vdevrc_dir/conf"
 
