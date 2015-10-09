@@ -21,7 +21,7 @@ working_project_file="${project_file%.*}.vdev"
 working_project_file_path="$project_dir/$working_project_file"
 
 # sed in OS X is so fucked up %)
-sed '/<Project[[:>:]].*/a\
+sed '/<Project .*>/a\
 <Target Name="VDevGetProperty"><Message Text="'"$property_line"'$('"$property"')"/></Target>
 ' "$project_path" > "$working_project_file_path"
 trap "rm -f \"$working_project_file_path\"" EXIT
