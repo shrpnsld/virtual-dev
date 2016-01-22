@@ -8,19 +8,21 @@ solution_path=$1
 solution_cache=$2
 
 
-if [ "$solution_path" -nt "$solution_cache" ]
+if [ ! "$solution_path" -nt "$solution_cache" ]
 then
-	printf 'Caching projects'"'"' paths...\n'
-
-	projects=$(grep 'Project(.*) = ' "$solution_path")
-	while read -r project
-	do
-		fields=${project#*= }
-		project_name=$(unquote $(awk -F', ' '{ print $1 }' <<< "$fields"))
-		project_path=$(dos2unix_path $(unquote $(awk -F', ' '{ print $2 }' <<< "$fields")))
-		dictionary_insert "$solution_cache" "$project_name" "$project_path"
-	done <<< "$projects"
-
-	printf "Done.\n\n"
+	exit
 fi
+
+printf 'Caching projects'"'"' paths...\n'
+
+projects=$(grep 'Project(.*) = ' "$solution_path")
+while read -r project
+do
+	fields=${project#*= }
+	project_name=$(unquote $(awk -F', ' '{ print $1 }' <<< "$fields"))
+	project_path=$(dos2unix_path $(unquote $(awk -F', ' '{ print $2 }' <<< "$fields")))
+	dictionary_insert "$solution_cache" "$project_name" "$project_path"
+done <<< "$projects"
+
+printf "Done.\n\n"
 

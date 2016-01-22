@@ -11,26 +11,28 @@ configuration=$4
 properties_path=$5
 
 
-if [ "$project_path" -nt "$properties_path" ]
+if [ ! "$project_path" -nt "$properties_path" ]
 then
-	printf 'Caching "%s" properties...\n' "$project_path"
-
-	out_dir=$(try detail/vsprojprop "$vs_version" "$solution_dir" "$project_path" "$configuration" "OutDir")
-	catch print_vdev_error "failed to get property"
-	out_dir=$(escape_backslashes "$out_dir")
-
-	name=$(try detail/vsprojprop "$vs_version" "$solution_dir" "$project_path" "$configuration" "TargetName")
-	catch print_vdev_error "failed to get property"
-
-	extension=$(try detail/vsprojprop "$vs_version" "$solution_dir" "$project_path" "$configuration" "TargetExt")
-	catch print_vdev_error "failed to get property"
-
-	rm -f "$properties_path"
-	touch "$properties_path"
-	conf_add "$properties_path" 'out_dir' "$out_dir"
-	conf_add "$properties_path" 'name' "$name"
-	conf_add "$properties_path" 'extension' "$extension"
-
-	printf 'Done.\n\n'
+	exit
 fi
+
+printf 'Caching "%s" properties...\n' "$project_path"
+
+out_dir=$(try detail/vsprojprop "$vs_version" "$solution_dir" "$project_path" "$configuration" "OutDir")
+catch print_vdev_error "failed to get property"
+out_dir=$(escape_backslashes "$out_dir")
+
+name=$(try detail/vsprojprop "$vs_version" "$solution_dir" "$project_path" "$configuration" "TargetName")
+catch print_vdev_error "failed to get property"
+
+extension=$(try detail/vsprojprop "$vs_version" "$solution_dir" "$project_path" "$configuration" "TargetExt")
+catch print_vdev_error "failed to get property"
+
+rm -f "$properties_path"
+touch "$properties_path"
+conf_add "$properties_path" 'out_dir' "$out_dir"
+conf_add "$properties_path" 'name' "$name"
+conf_add "$properties_path" 'extension' "$extension"
+
+printf 'Done.\n\n'
 
