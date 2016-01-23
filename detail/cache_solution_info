@@ -21,7 +21,10 @@ then
 	exit
 fi
 
-printf 'Caching projects'"'"' paths...\n'
+printf 'Caching solution info...\n'
+
+version=$(detail/vsversion "$solution_path")
+dictionary_insert "$solution_cache" 'version' "$version"
 
 projects=$(grep 'Project(.*) = ' "$solution_path")
 while read -r project

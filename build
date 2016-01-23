@@ -8,6 +8,7 @@ export vdev_dir="$working_dir/.vdev"
 source "$vdev_dir/vm"
 source "$vdev_dir/conf"
 source detail/utils
+source detail/dictionary
 
 
 #
@@ -21,7 +22,12 @@ configuration=$3
 #
 # Main
 
-vs_version=$(detail/vsversion "$working_dir/$solution_path")
+solution_dir=$(dirname "$solution_path")
+solution_info_dir=$(sln_info_dir_name "$solution_path")
+solution_cache="$vdev_dir/$solution_info_dir/solution.cache"
+detail/cache_solution_info "$working_dir/$solution_path" "$solution_cache"
+
+vs_version=$(dictionary_find "$solution_cache" 'version')
 
 guest_solution_path="$guest_root_dir/$solution_path"
 detail/"$vm"/execute "$guest_build_bat" "$vs_version" "$guest_solution_path" "$target" "$configuration"
