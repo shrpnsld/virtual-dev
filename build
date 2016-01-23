@@ -2,11 +2,11 @@
 
 export working_dir=$(pwd)
 cd $(dirname $0)
-export vdevrc_dir="$working_dir/vdevrc"
+export vdev_dir="$working_dir/.vdev"
 
 
-source "$vdevrc_dir/vm"
-source "$vdevrc_dir/conf"
+source "$vdev_dir/vm"
+source "$vdev_dir/conf"
 source detail/utils
 
 

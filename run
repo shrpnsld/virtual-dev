@@ -2,11 +2,11 @@
 
 export working_dir=$(pwd)
 cd $(dirname $0)
-export vdevrc_dir="$working_dir/vdevrc"
+export vdev_dir="$working_dir/.vdev"
 
 
-source "$vdevrc_dir/vm"
-source "$vdevrc_dir/conf"
+source "$vdev_dir/vm"
+source "$vdev_dir/conf"
 source detail/utils
 source detail/dictionary
 
@@ -27,14 +27,14 @@ solution_info_dir=$(sln_info_dir_name "$solution_path")
 
 vs_version=$(detail/vsversion "$working_dir/$solution_path")
 
-solution_cache="$vdevrc_dir/$solution_info_dir/solution.cache"
+solution_cache="$vdev_dir/$solution_info_dir/solution.cache"
 detail/loadprojpaths "$working_dir/$solution_path" "$solution_cache"
 
 project_relative_path=$(dictionary_find "$solution_cache" "$target")
 project_path="$working_dir/$solution_dir/$project_relative_path"
 project_dir=$(dirname "$project_relative_path")
 
-properties_path="$vdevrc_dir/$solution_info_dir/$target.$configuration.properties"
+properties_path="$vdev_dir/$solution_info_dir/$target.$configuration.properties"
 detail/loadprojprops "$vs_version" "$solution_dir" "$project_path" "$configuration" "$properties_path"
 source "$properties_path"
 

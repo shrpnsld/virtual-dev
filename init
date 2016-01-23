@@ -2,7 +2,7 @@
 
 export working_dir=$(pwd)
 cd $(dirname $0)
-export vdevrc_dir="$working_dir/vdevrc"
+export vdev_dir="$working_dir/.vdev"
 
 
 source detail/utils
@@ -42,11 +42,11 @@ vm="VirtualBox"
 vm_manage=$(which "${!vm}")
 
 
-rm -rf "$vdevrc_dir"
-mkdir "$vdevrc_dir"
+rm -rf "$vdev_dir"
+mkdir "$vdev_dir"
 
 
-vdevrc_vm="$vdevrc_dir/vm"
+vdevrc_vm="$vdev_dir/vm"
 
 conf_add "$vdevrc_vm" 'vm' "$vm"
 conf_add "$vdevrc_vm" 'vm_manage' "$vm_manage"
@@ -79,12 +79,12 @@ printf 'Finishing initialization...\n'
 
 # Configuration
 
-cp -R guest "$vdevrc_dir/"
+cp -R guest "$vdev_dir/"
 
-vdevrc_conf="$vdevrc_dir/conf"
+vdevrc_conf="$vdev_dir/conf"
 
 conf_add "$vdevrc_conf" 'guest_root_dir' "$guest_shared_disk"
-conf_add "$vdevrc_conf" 'guest_vdevrc_guest_dir' '$guest_root_dir/vdevrc/guest/'
+conf_add "$vdevrc_conf" 'guest_vdevrc_guest_dir' '$guest_root_dir/.vdev/guest/'
 conf_add "$vdevrc_conf" 'guest_vsprojprop_bat' '$guest_vdevrc_guest_dir/vsprojprop.bat'
 conf_add "$vdevrc_conf" 'guest_build_bat' '$guest_vdevrc_guest_dir/build.bat'
 conf_add "$vdevrc_conf" 'guest_run_bat' '$guest_vdevrc_guest_dir/run.bat'
