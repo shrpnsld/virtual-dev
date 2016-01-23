@@ -2,6 +2,7 @@
 
 export working_dir=$(pwd)
 cd $(dirname $0)
+export vdevrc_dir="$working_dir/vdevrc"
 
 
 source detail/utils
@@ -9,14 +10,14 @@ source detail/utils
 
 help_message=\
 'Usage:
-	./init [guest_name] [user] [password] [solution_paths...]
+	./init [guest_name] [user] [password]
 '
 
 
 #
 # Parameters & variables
 
-if [ $# -lt 4 ]
+if [ $# -ne 3 ]
 then
 	print_vdev_error 'wrong number of arguments\n%s\n' "$help_message"
 	exit 1
@@ -39,7 +40,6 @@ vm="VirtualBox"
 vm_manage=$(which "${!vm}")
 
 
-vdevrc_dir="$project_root/vdevrc"
 rm -rf "$vdevrc_dir"
 mkdir "$vdevrc_dir"
 
@@ -77,7 +77,7 @@ printf 'Finishing initialization...\n'
 
 
 #
-# 'paths' configuration
+# Configuration
 
 cp -R guest "$vdevrc_dir/"
 
@@ -88,23 +88,6 @@ conf_add "$vdevrc_conf" 'guest_vdevrc_guest_dir' '$guest_root_dir/vdevrc/guest/'
 conf_add "$vdevrc_conf" 'guest_vsprojprop_bat' '$guest_vdevrc_guest_dir/vsprojprop.bat'
 conf_add "$vdevrc_conf" 'guest_build_bat' '$guest_vdevrc_guest_dir/build.bat'
 conf_add "$vdevrc_conf" 'guest_run_bat' '$guest_vdevrc_guest_dir/run.bat'
-
-
-for solution_path in ${@:4}
-do
-	if [ ! -f "$project_root/$solution_path" ]
-	then
-		print_vdev_error '"%s" does not exist' "$solution_path"
-		exit 1
-	fi
-
-	solution_info_dir_name=$(sln_info_dir_name $solution_path)
-	vdevrc_solution_info_dir="$vdevrc_dir/$solution_info_dir_name"
-	mkdir "$vdevrc_solution_info_dir"
-
-	vs_version=$(detail/vsversion "$project_root/$solution_path")
-	printf '%s\n' "$vs_version" > "$vdevrc_solution_info_dir/vs_version"
-done
 
 
 printf 'Done.\n'

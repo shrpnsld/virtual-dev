@@ -2,21 +2,26 @@
 
 export working_dir=$(pwd)
 cd $(dirname $0)
+export vdevrc_dir="$working_dir/vdevrc"
 
 
-source "$working_dir/vdevrc/vm"
-source "$working_dir/vdevrc/conf"
+source "$vdevrc_dir/vm"
+source "$vdevrc_dir/conf"
 source detail/utils
 
+
+#
+# Parameters
 
 solution_path=$1
 target=$2
 configuration=$3
 
 
-solution_info_dir=$(sln_info_dir_name "$solution_path")
-vs_version_path="$working_dir/vdevrc/$solution_info_dir/vs_version"
-vs_version=$(cat "$vs_version_path")
+#
+# Main
+
+vs_version=$(detail/vsversion "$working_dir/$solution_path")
 
 guest_solution_path="$guest_root_dir/$solution_path"
 detail/"$vm"/execute "$guest_build_bat" "$vs_version" "$guest_solution_path" "$target" "$configuration"
