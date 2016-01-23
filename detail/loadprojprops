@@ -11,6 +11,8 @@ configuration=$4
 properties_path=$5
 
 
+check_dir $(dirname "$properties_path")
+
 if [ ! "$project_path" -nt "$properties_path" ]
 then
 	exit

@@ -8,6 +8,8 @@ solution_path=$1
 solution_cache=$2
 
 
+check_dir $(dirname "$solution_cache")
+
 if [ ! "$solution_path" -nt "$solution_cache" ]
 then
 	exit

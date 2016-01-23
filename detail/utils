@@ -90,3 +90,15 @@ sln_info_dir_name()
 	sed 's/\//\./g' <<< "$path"
 }
 
+
+check_dir()
+{
+	path=$1
+	if [ -d "$path" ]
+	then
+		return
+	fi
+
+	mkdir "$path"
+}
+
