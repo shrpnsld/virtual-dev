@@ -4,5 +4,8 @@ source detail/utils
 source "$vdevrc_dir/vm"
 
 
+#
+# Main
+
 "$vm_manage" guestcontrol "$guest_name" execute --image "cmd.exe" --username "$user" --password "$password" --wait-exit --wait-stdout --wait-stderr "/E:ON" "/Q" "/C" "$@"
 

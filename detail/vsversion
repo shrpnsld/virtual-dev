@@ -1,7 +1,14 @@
 #!/bin/bash
 
+
+#
+# Parameters
+
 solution_path=$1
 
+
+#
+# Main
 
 vs2010=10
 vs2012=11

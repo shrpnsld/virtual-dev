@@ -4,8 +4,15 @@ source detail/utils
 source "$vdevrc_dir/vm"
 
 
+#
+# Parameters
+
 name=$1
 path=$2
+
+
+#
+# Main
 
 "$vm_manage" sharedfolder add "$guest_name" --name "$name" --hostpath "$path" --automount
 

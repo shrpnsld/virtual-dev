@@ -4,6 +4,9 @@ source detail/utils
 source "$vdevrc_dir/vm"
 
 
+#
+# Main
+
 "$vm_manage" startvm "$guest_name" 1> /dev/null || exit 1
 
 checkstr="running"

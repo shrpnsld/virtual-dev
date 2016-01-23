@@ -4,11 +4,17 @@ source "$vdevrc_dir/vm"
 source detail/utils
 
 
+#
+# Parameters
+
 id_dir=$1
 
 
 #
+# Main
+
 # waiting for the service to be available
+
 while [ true ]
 do
 	output=$(detail/"$vm"/execute net use)
@@ -27,7 +33,6 @@ do
 done
 
 
-#
 # searching disk with current project
 
 id="vdevid$RANDOM"

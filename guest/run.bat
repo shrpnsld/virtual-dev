@@ -1,7 +1,13 @@
+::
+:: Parameters
+
 set SOLUTION_DIR=%1
 set OUT_DIR=%2
 set TARGET=%3
 
+
+::
+:: Main
 
 rem Dealing with relative paths
 cd /d %SOLUTION_DIR% || exit %ERRORLEVEL%

@@ -3,9 +3,15 @@
 source detail/utils
 
 
+#
+# Parameters
+
 solution_path=$1
 project_name=$2
 
+
+#
+# Main
 
 record=$(grep 'Project(.*) = "'"$project_name"'".*' "$solution_path")
 fields=${record#*= }

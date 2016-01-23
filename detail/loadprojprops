@@ -4,12 +4,18 @@ source detail/utils
 source detail/dictionary
 
 
+#
+# Parameters
+
 vs_version=$1
 solution_dir=$2
 project_path=$3
 configuration=$4
 properties_path=$5
 
+
+#
+# Main
 
 check_dir $(dirname "$properties_path")
 

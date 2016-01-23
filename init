@@ -15,7 +15,7 @@ help_message=\
 
 
 #
-# Parameters & variables
+# Parameters
 
 if [ $# -ne 3 ]
 then
@@ -28,10 +28,12 @@ user=$2
 password=$3
 
 
+#
+# Main
+
 project_root="$working_dir"
 
 
-#
 # 'vm' configuration
 
 # for future extensibility
@@ -53,7 +55,6 @@ conf_add "$vdevrc_vm" 'user' "$user"
 conf_add "$vdevrc_vm" 'password' "$password"
 
 
-#
 # Shared folder
 
 project_name=$(basename "$project_root")
@@ -76,7 +77,6 @@ guest_shared_disk="$output"
 printf 'Finishing initialization...\n'
 
 
-#
 # Configuration
 
 cp -R guest "$vdevrc_dir/"

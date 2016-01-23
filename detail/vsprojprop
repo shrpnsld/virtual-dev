@@ -6,12 +6,18 @@ source detail/utils
 source detail/dictionary
 
 
+#
+# Parameters
+
 vs_version=$1
 solution_dir=$2
 project_path=$3
 configuration=$4
 property=$5
 
+
+#
+# Main
 
 property_line="virtual-dev property: "
 

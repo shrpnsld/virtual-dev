@@ -4,9 +4,15 @@ source detail/utils
 source detail/dictionary
 
 
+#
+# Parameters
+
 solution_path=$1
 solution_cache=$2
 
+
+#
+# Main
 
 check_dir $(dirname "$solution_cache")
 
