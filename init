@@ -60,15 +60,15 @@ conf_add "$vdevrc_vm" 'password' "$password"
 project_name=$(basename "$project_root")
 
 printf 'Creating working directory on \"%s\"...\n' "$guest_name"
-try detail/"$vm"/sharedfolder "$project_name" "$project_root" 1> /dev/null
+try detail/"$vm"/shared_folder "$project_name" "$project_root" 1> /dev/null
 catch print_vdev_error "failed to create shared folder"
 
 printf 'Waiting for \"%s\" to start...\n' "$guest_name"
-try detail/"$vm"/startvm
+try detail/"$vm"/start_vm
 catch print_vdev_error "failed to start \"$guest_name\""
 
 printf 'Waiting for "net" to be available (requires \"%s\" to login)...\n' "$user"
-output=$(try detail/finddisk "$project_root")
+output=$(try detail/find_disk "$project_root")
 catch print_vdev_error "failed to find shared disk with project"
 
 guest_shared_disk="$output"
@@ -85,7 +85,7 @@ vdevrc_conf="$vdev_dir/conf"
 
 conf_add "$vdevrc_conf" 'guest_root_dir' "$guest_shared_disk"
 conf_add "$vdevrc_conf" 'guest_vdevrc_guest_dir' '$guest_root_dir/.vdev/guest/'
-conf_add "$vdevrc_conf" 'guest_vsprojprop_bat' '$guest_vdevrc_guest_dir/vsprojprop.bat'
+conf_add "$vdevrc_conf" 'guest_project_property_bat' '$guest_vdevrc_guest_dir/project_property.bat'
 conf_add "$vdevrc_conf" 'guest_build_bat' '$guest_vdevrc_guest_dir/build.bat'
 conf_add "$vdevrc_conf" 'guest_run_bat' '$guest_vdevrc_guest_dir/run.bat'
 

@@ -26,14 +26,14 @@ fi
 
 printf 'Caching "%s" properties...\n' "$project_path"
 
-out_dir=$(try detail/vsprojprop "$vs_version" "$solution_dir" "$project_path" "$configuration" "OutDir")
+out_dir=$(try detail/project_property "$vs_version" "$solution_dir" "$project_path" "$configuration" "OutDir")
 catch print_vdev_error "failed to get property"
 out_dir=$(escape_backslashes "$out_dir")
 
-name=$(try detail/vsprojprop "$vs_version" "$solution_dir" "$project_path" "$configuration" "TargetName")
+name=$(try detail/project_property "$vs_version" "$solution_dir" "$project_path" "$configuration" "TargetName")
 catch print_vdev_error "failed to get property"
 
-extension=$(try detail/vsprojprop "$vs_version" "$solution_dir" "$project_path" "$configuration" "TargetExt")
+extension=$(try detail/project_property "$vs_version" "$solution_dir" "$project_path" "$configuration" "TargetExt")
 catch print_vdev_error "failed to get property"
 
 rm -f "$properties_path"
