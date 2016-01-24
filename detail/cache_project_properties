@@ -24,7 +24,7 @@ then
 	exit
 fi
 
-printf 'Caching "%s" properties...\n' "$project_path"
+printf 'Caching "%s" properties...\n' "${project_path#$working_dir/}"
 
 out_dir=$(try detail/project_property "$vs_version" "$solution_dir" "$project_path" "$configuration" "OutDir")
 catch print_vdev_error "failed to get property"

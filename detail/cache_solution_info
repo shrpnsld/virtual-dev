@@ -21,7 +21,7 @@ then
 	exit
 fi
 
-printf 'Caching solution info...\n'
+printf 'Caching "%s" info...\n' "${solution_path#$working_dir/}"
 
 version=$(detail/vs_version "$solution_path")
 dictionary_insert "$solution_cache" 'version' "$version"
