@@ -24,6 +24,21 @@ fi
 printf 'Caching "%s" info...\n' "${solution_path#$working_dir/}"
 
 version=$(detail/vs_version "$solution_path")
+if [ -z "$version" ]
+then
+	printf 'Failed to determine Visual Studio version for %s\nPlease specify it explicitly: ' "${solution_path#$working_dir/}"
+	while true
+	do
+		read version
+		if [[ $version =~ ^[0-9]+$ ]]
+		then
+			break
+		fi
+
+		printf '%s\n' 'error: bad version number'
+	done
+fi
+
 dictionary_insert "$solution_cache" 'version' "$version"
 
 projects=$(grep 'Project(.*) = ' "$solution_path")
