@@ -31,8 +31,8 @@ while read -r project
 do
 	fields=${project#*= }
 	project_name=$(unquote $(awk -F', ' '{ print $1 }' <<< "$fields"))
-	dos_path=$(unquote $(awk -F', ' '{ print $2 }' <<< "$fields"))
-	project_path=$(dos2unix_path "$dos_path")
+	project_dos_path=$(unquote $(awk -F', ' '{ print $2 }' <<< "$fields"))
+	project_path=$(dos2unix_path "$project_dos_path")
 	dictionary_insert "$solution_cache" "$project_name" "$project_path"
 done <<< "$projects"
 

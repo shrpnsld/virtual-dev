@@ -87,11 +87,21 @@ unquote()
 }
 
 
-sln_info_dir_name()
+make_solution_cache_name()
 {
 	local path=$1
 
 	sed 's/\//\./g' <<< "$path"
+}
+
+
+make_solution_cache_path()
+{
+	local solution_path=$1
+	local out_dir=$2
+
+	local solution_cache_dir=$(make_solution_cache_name "$solution_path")
+	printf '%s\n' "$out_dir/$solution_cache_dir"
 }
 
 
@@ -104,6 +114,6 @@ check_dir()
 		return
 	fi
 
-	mkdir "$path"
+	mkdir -p "$path"
 }
 

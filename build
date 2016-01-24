@@ -22,12 +22,11 @@ configuration=$3
 #
 # Main
 
-solution_dir=$(dirname "$solution_path")
-solution_info_dir=$(sln_info_dir_name "$solution_path")
-solution_cache="$vdev_dir/$solution_info_dir/solution.cache"
-detail/cache_solution_info "$working_dir/$solution_path" "$solution_cache"
+solution_cache_dir=$(make_solution_cache_path "$solution_path" "$vdev_dir/cache")
+solution_cache_path="$solution_cache_dir/solution.cache"
+detail/cache_solution_info "$working_dir/$solution_path" "$solution_cache_path"
 
-vs_version=$(dictionary_find "$solution_cache" 'version')
+vs_version=$(dictionary_find "$solution_cache_path" 'version')
 
 guest_solution_path="$guest_root_dir/$solution_path"
 detail/"$vm"/execute "$guest_build_bat" "$vs_version" "$guest_solution_path" "$target" "$configuration"

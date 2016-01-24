@@ -1,0 +1,9 @@
+#!/bin/bash
+
+export working_dir=$(pwd)
+cd $(dirname $0)
+export vdev_dir="$working_dir/.vdev"
+
+
+rm -rf "$vdev_dir/cache"
+
