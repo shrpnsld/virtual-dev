@@ -2,7 +2,7 @@ try()
 {
 	rm -f "error_buffer"
 
-	output=$("$@" 2>&1)
+	local output=$("$@" 2>&1)
 	if [ $? -ne 0 ]
 	then
 		printf "$output" > "error_buffer"
@@ -31,7 +31,8 @@ catch()
 
 print_vdev_error()
 {
-	message=$(printf "$@")
+	local message=$(printf "$@")
+
 	printf '** virtual-dev error: %s\n' "$message" >&2
 
 	if [ -f "error_buffer" ]
@@ -47,9 +48,9 @@ print_vdev_error()
 
 conf_add()
 {
-	file=$1
-	key=$2
-	value=$3
+	local file=$1
+	local key=$2
+	local value=$3
 
 	printf '%s="%s"\n' "$key" "$value" >> "$file"
 }
@@ -63,14 +64,15 @@ dos2unix_eoln()
 
 dos2unix_path()
 {
-	dos_path=$1
+	local dos_path=$1
+
 	sed 's/\\/\//g' <<< $dos_path
 }
 
 
 escape_backslashes()
 {
-	dos_path=$1
+	local dos_path=$1
 
 	sed 's/\\/\\\\/g' <<< $dos_path
 }
@@ -78,22 +80,25 @@ escape_backslashes()
 
 unquote()
 {
-	quoted=$1
-	unquoted=${quoted:1:${#quoted}-2}
+	local quoted=$1
+
+	local unquoted=${quoted:1:${#quoted}-2}
 	printf "%s\n" "$unquoted"
 }
 
 
 sln_info_dir_name()
 {
-	path=$1
+	local path=$1
+
 	sed 's/\//\./g' <<< "$path"
 }
 
 
 check_dir()
 {
-	path=$1
+	local path=$1
+
 	if [ -d "$path" ]
 	then
 		return
