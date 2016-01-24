@@ -5,5 +5,14 @@ cd $(dirname $0)
 export vdev_dir="$working_dir/.vdev"
 
 
+source detail/utils
+
+if [ ! -d "$vdev_dir" ]
+then
+	print_vdev_error 'current path doesn'"'"'t have any virtual-dev configuration'
+	exit 1
+fi
+
+
 rm -rf "$vdev_dir/cache"
 
