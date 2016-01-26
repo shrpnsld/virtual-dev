@@ -10,7 +10,10 @@ set CONFIGURATION=%4
 ::
 :: Main
 
-set VCVARSALL="%ProgramFiles(x86)%\Microsoft Visual Studio %VS_VERSION%.0\VC\vcvarsall.bat"
+:: getting specific VS version path and saving it in the variable
+for /f "delims=" %i ('call echo %VS%%VS_VERSION%0COMNTOOLS%') do set VS_COMNTOOLS_PATH=%i
+
+set VCVARSALL="%VS_COMNTOOLS_PATH%\..\..\VC\vcvarsall.bat"
 
 call %VCVARSALL% || exit 1
 
