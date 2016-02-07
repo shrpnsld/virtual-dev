@@ -7,11 +7,8 @@ export vdev_dir="$working_dir/.vdev"
 
 source detail/utils
 
-if [ ! -d "$vdev_dir" ]
-then
-	print_vdev_error 'current path doesn'"'"'t have any virtual-dev configuration'
-	exit 1
-fi
+
+assert_dir_exists "$vdev_dir" 'current path doesn'"'"'t have any virtual-dev configuration'
 
 
 source "$vdev_dir/vm"
@@ -30,9 +27,12 @@ configuration=$3
 #
 # Main
 
+solution_absolute_path="$working_dir/$solution_path"
+assert_file_readable "$solution_absolute_path"
+
 solution_cache_dir=$(make_solution_cache_path "$solution_path" "$vdev_dir/cache")
 solution_cache_path="$solution_cache_dir/solution.cache"
-detail/cache_solution_info "$working_dir/$solution_path" "$solution_cache_path"
+detail/cache_solution_info "$solution_absolute_path" "$solution_cache_path"
 
 vs_version=$(dictionary_find "$solution_cache_path" 'version')
 

@@ -105,6 +105,45 @@ make_solution_cache_path()
 }
 
 
+assert_file_readable()
+{
+	local path=$1
+
+	if [ ! -r "$path" ]
+	then
+		print_vdev_error 'cannot read file "%s"' "$path"
+		exit 1
+	fi
+}
+
+
+print_custom_vdev_error()
+{
+	local default_message=$1
+	local user_message=$2
+
+	if [ -n "$user_message" ]
+	then
+		print_vdev_error "$user_message"
+	else
+		print_vdev_error "$default_message"
+	fi
+}
+
+
+assert_dir_exists()
+{
+	local path=$1
+	local error_message=$2
+
+	if [ ! -d "$path" ]
+	then
+		print_custom_vdev_error 'directory '"$path"' does not exist' "$error_message"
+		exit 1
+	fi
+}
+
+
 check_dir()
 {
 	local path=$1
