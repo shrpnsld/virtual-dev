@@ -9,11 +9,11 @@ set CONFIGURATION=%4
 
 ::
 :: Main
+setlocal enableDelayedExpansion
 
 :: getting specific VS version path and saving it in the variable
-for /f "delims=" %i ('call echo %VS%%VS_VERSION%0COMNTOOLS%') do set VS_COMNTOOLS_PATH=%i
-
-set VCVARSALL="%VS_COMNTOOLS_PATH%\..\..\VC\vcvarsall.bat"
+call set VS_COMNTOOLS_PATH=VS%VS_VERSION%0COMNTOOLS
+set VCVARSALL="!%VS_COMNTOOLS_PATH%!\..\..\VC\vcvarsall.bat"
 
 call %VCVARSALL% || exit 1
 
