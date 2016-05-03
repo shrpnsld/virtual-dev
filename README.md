@@ -31,22 +31,22 @@ This target should have following settings:
 * Arguments: `Path/To/Solution.sln` `Project` `$(CONFIGURATION)`
 * Directory: `/Absolute/Project/Root/`
 
-![](./img/ExternalBuildToolConfiguration.png)
+![](./doc/ExternalBuildToolConfiguration.png)
 
 To run target it's scheme should have following settings:
 
 * Executable: `/Absolute/Path/To/virtual-dev/run`
 * Option 'Debug executable' should be turned off
 
-![](./img/SchemeRunInfo.png)
+![](./doc/SchemeRunInfo.png)
 
 * Arguments: `/Absolute/Path/To/virtual-dev/`, `$(TARGETNAME)` and `$(CONFIGURATION)`
 
-![](./img/SchemeRunArguments.png)
+![](./doc/SchemeRunArguments.png)
 
 * Working Directory: `/Absolute/Project/Root/`
 
-![](./img/SchemeRunOptions.png)
+![](./doc/SchemeRunOptions.png)
 
 
 
