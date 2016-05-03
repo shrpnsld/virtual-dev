@@ -59,6 +59,13 @@ conf_add "$vdevrc_vm" 'password' "$password"
 
 project_name=$(basename "$project_root")
 
+
+if detail/"$vm"/is_running "$guest_name"
+then
+	print_vdev_error '%s is currently running, please shut it down' "$guest_name"
+	exit 1
+fi
+
 printf 'Creating working directory on \"%s\"...\n' "$guest_name"
 try detail/"$vm"/shared_folder "$project_name" "$project_root" 1> /dev/null
 catch print_vdev_error "failed to create shared folder"

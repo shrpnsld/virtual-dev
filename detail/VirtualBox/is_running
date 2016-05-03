@@ -1,0 +1,17 @@
+#!/bin/bash
+
+
+#
+# Parameters
+
+guest_name=$1
+
+
+#
+# Main
+
+running_vms=$(VBoxManage list runningvms)
+grep --quiet "\"$guest_name\".*" <<< "$running_vms"
+
+
+
