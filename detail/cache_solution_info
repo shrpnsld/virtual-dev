@@ -21,8 +21,6 @@ then
 	exit
 fi
 
-printf 'Caching "%s" info...\n' "${solution_path#$working_dir/}"
-
 version=$(detail/vs_version "$solution_path")
 if [ -z "$version" ]
 then
@@ -50,6 +48,4 @@ do
 	project_path=$(dos2unix_path "$project_dos_path")
 	dictionary_insert "$solution_cache" "$project_name" "$project_path"
 done <<< "$projects"
-
-printf "Done.\n\n"
 
