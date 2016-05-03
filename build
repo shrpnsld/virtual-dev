@@ -37,8 +37,8 @@ detail/cache_solution_info "$solution_absolute_path" "$solution_cache_path"
 vs_version=$(dictionary_find "$solution_cache_path" 'version')
 
 guest_solution_path="$guest_root_dir/$solution_path"
-detail/"$vm"/execute "$guest_build_bat" "$vs_version" "$guest_solution_path" "$target" "$configuration"
-retval=$?
+detail/"$vm"/execute "$guest_build_bat" "$vs_version" "$guest_solution_path" "$target" "$configuration" | detail/error_format_mvs_to_gcc
+retval=${PIPESTATUS[0]}
 printf '\n'
 
 exit $retval

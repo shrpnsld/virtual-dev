@@ -1,0 +1,12 @@
+#!/bin/bash
+
+remove_disk_letter='s/  [A-Z]\:\\/  /'
+path_dos_to_unix=':again
+s/\(^[^:]*\)\\/\1\//
+/\(^[^:]*\)\\/b again'
+file_path_pattern='[A-Za-z0-9\.\/\-\_\+\=\(\)\{\}]*'
+error_vs_to_gcc='s/^\ *\('"$file_path_pattern"'\)(\([0-9]*\)): error [^:]*:/\1:\2: error:/'
+warning_vs_to_gcc='s/^\ *\('"$file_path_pattern"'\)(\([0-9]*\)): warning [^:]*:/\1:\2: warning:/'
+
+sed -e "$remove_disk_letter" -e "$path_dos_to_unix" -e "$error_vs_to_gcc" -e "$warning_vs_to_gcc"
+
