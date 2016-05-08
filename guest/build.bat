@@ -1,21 +1,23 @@
 ::
 :: Parameters
 
-set VS_VERSION=%1
-set SOLUTION_PATH=%2
-set TARGET=%3
-set CONFIGURATION=%4
+set vs_version=%1
+set solution_path=%2
+set target=%3
+set configuration=%4
 
 
 ::
 :: Main
+
 setlocal enableDelayedExpansion
 
 :: getting specific VS version path and saving it in the variable
-call set VS_COMNTOOLS_PATH=VS%VS_VERSION%0COMNTOOLS
-set VCVARSALL="!%VS_COMNTOOLS_PATH%!\..\..\VC\vcvarsall.bat"
+call set vs_comntools_path=VS%vs_version%0COMNTOOLS
+set vcvarsall="!%vs_comntools_path%!\..\..\VC\vcvarsall.bat"
 
-call %VCVARSALL% || exit 1
+call %vcvarsall% || exit 1
 
-(msbuild /nologo %SOLUTION_PATH% /target:%TARGET% /property:configuration=%CONFIGURATION% & call doskey /exename=err err=%%^^errorlevel%%) | for /f "usebackq delims=" %%l in (`more`) do @echo %%l
+(msbuild /nologo %solution_path% /target:%target% /property:configuration=%configuration% & call doskey /exename=err err=%%^^errorlevel%%) | for /f "usebackq delims=" %%l in (`more`) do @echo %%l
 for /f "tokens=2 delims==" %%A in ('doskey /m:err') do exit /b %%A
+

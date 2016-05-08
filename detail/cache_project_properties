@@ -24,15 +24,15 @@ then
 	exit
 fi
 
-out_dir=$(try detail/project_property "$vs_version" "$solution_dir" "$project_path" "$configuration" "OutDir")
-catch print_vdev_error "failed to get property"
+out_dir=$(try detail/project_property "$vs_version" "$solution_dir" "$project_path" "$configuration" 'OutDir')
+catch print_vdev_error 'failed to get project property "OutDir"'
 out_dir=$(escape_backslashes "$out_dir")
 
-name=$(try detail/project_property "$vs_version" "$solution_dir" "$project_path" "$configuration" "TargetName")
-catch print_vdev_error "failed to get property"
+name=$(try detail/project_property "$vs_version" "$solution_dir" "$project_path" "$configuration" 'TargetName')
+catch print_vdev_error 'failed to get project property "TargetName"'
 
-extension=$(try detail/project_property "$vs_version" "$solution_dir" "$project_path" "$configuration" "TargetExt")
-catch print_vdev_error "failed to get property"
+extension=$(try detail/project_property "$vs_version" "$solution_dir" "$project_path" "$configuration" 'TargetExt')
+catch print_vdev_error 'failed to get project property "TargetExt"'
 
 rm -f "$properties_path"
 touch "$properties_path"

@@ -19,20 +19,20 @@ property=$5
 #
 # Main
 
-property_line="virtual-dev property: "
+property_line='virtual-dev property: '
 
 project_file=$(basename "$project_path")
 project_dir=$(dirname "$project_path")
 working_project_file="${project_file%.*}.vdev"
 working_project_file_path="$project_dir/$working_project_file"
 
-# sed in OS X is so fucked up %)
 sed '/<Project .*>/a\
 <Target Name="VDevGetProperty"><Message Text="'"$property_line"'$('"$property"')"/></Target>
 ' "$project_path" > "$working_project_file_path"
+
 trap "rm -f \"$working_project_file_path\"" EXIT
 
-output=$(detail/"$vm"/execute "$guest_project_property_bat" "$vs_version" "$guest_root_dir/$solution_dir/$working_project_file" "VDevGetProperty" "$configuration") || exit 1
+output=$(detail/"$vm"/execute "$guest_build_bat" "$vs_version" "$guest_root_dir/$solution_dir/$working_project_file" 'VDevGetProperty' "$configuration") || exit 1
 line=$(grep "$property_line" <<< "$output")
 
 printf '%s\n' ${line#*$property_line}

@@ -1,17 +1,17 @@
 ::
 :: Parameters
 
-set SOLUTION_DIR=%1
-set OUT_DIR=%2
-set TARGET=%3
+set solution_dir=%1
+set out_dir=%2
+set target=%3
 
 
 ::
 :: Main
 
-rem Dealing with relative paths
-cd /d %SOLUTION_DIR% || exit %ERRORLEVEL%
-cd /d %OUT_DIR% || exit %ERRORLEVEL%
+:: Dealing with relative paths
+cd /d %solution_dir% || exit %errorlevel%
+cd /d %out_dir% || exit %errorlevel%
 
-%TARGET%
+%target%
 

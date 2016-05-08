@@ -10,7 +10,7 @@ source detail/utils
 
 help_message=\
 'Usage:
-	./init [guest_name] [user] [password]
+	Path/To/virtual-dev/init [guest_name] [user] [password]
 '
 
 
@@ -19,7 +19,8 @@ help_message=\
 
 if [ $# -ne 3 ]
 then
-	print_vdev_error 'wrong number of arguments\n%s\n' "$help_message"
+	print_vdev_error 'wrong number of arguments'
+	printf_message '%s' "$help_message"
 	exit 1
 fi
 
@@ -37,8 +38,8 @@ project_root="$working_dir"
 # 'vm' configuration
 
 # for future extensibility
-VirtualBox=VBoxManage
-vm="VirtualBox"
+VirtualBox='VBoxManage'
+vm='VirtualBox'
 vm_manage=$(which "${!vm}")
 
 
@@ -62,26 +63,26 @@ project_name=$(basename "$project_root")
 
 if detail/"$vm"/is_running "$guest_name"
 then
-	print_vdev_error '%s is currently running, please shut it down' "$guest_name"
+	print_vdev_error '"%s" is currently running, please shut it down' "$guest_name"
 	exit 1
 fi
 
-printf 'Creating working directory on \"%s\"...\n' "$guest_name"
+printf_message 'Creating working directory on "%s"...' "$guest_name"
 try detail/"$vm"/shared_folder "$project_name" "$project_root" 1> /dev/null
-catch print_vdev_error "failed to create shared folder"
+catch print_vdev_error 'failed to create shared folder'
 
-printf 'Waiting for \"%s\" to start...\n' "$guest_name"
+printf_message 'Waiting for "%s" to start...' "$guest_name"
 try detail/"$vm"/start_vm
-catch print_vdev_error "failed to start \"$guest_name\""
+catch print_vdev_error 'failed to start "%s"' "$guest_name"
 
-printf 'Waiting for "net" to be available (requires \"%s\" to login)...\n' "$user"
+printf_message 'Waiting for "net" utility to be available (requires "%s" to login)...' "$user"
 output=$(try detail/find_disk "$project_root")
-catch print_vdev_error "failed to find shared disk with project"
+catch print_vdev_error 'failed to find shared disk with project'
 
 guest_shared_disk="$output"
 
 
-printf 'Finishing initialization...\n'
+printf_message 'Finishing initialization...'
 
 
 # Configuration
@@ -97,5 +98,5 @@ conf_add "$vdevrc_conf" 'guest_build_bat' '$guest_vdevrc_guest_dir/build.bat'
 conf_add "$vdevrc_conf" 'guest_run_bat' '$guest_vdevrc_guest_dir/run.bat'
 
 
-printf 'Done.\n'
+printf_message 'Done.'
 

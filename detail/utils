@@ -1,24 +1,24 @@
 try()
 {
-	rm -f "error_buffer"
+	rm -f 'error_buffer'
 
 	local output=$("$@" 2>&1)
 	if [ $? -ne 0 ]
 	then
-		printf "$output" > "error_buffer"
+		printf "$output" > 'error_buffer'
 		return 1
 	fi
 
 	if [ ! -z "$output" ]
 	then
-		printf "%s\n" "$output"
+		printf '%s\n' "$output"
 	fi
 }
 
 
 catch()
 {
-	if [ $? -eq 0 ]
+	if [ $? == 0 ]
 	then
 		return 0
 	fi
@@ -29,17 +29,24 @@ catch()
 }
 
 
+printf_message()
+{
+	printf "$@"
+	printf '\n'
+}
+
+
 print_vdev_error()
 {
 	local message=$(printf "$@")
 
 	printf '** virtual-dev error: %s\n' "$message" >&2
 
-	if [ -f "error_buffer" ]
+	if [ -f 'error_buffer' ]
 	then
-		error_buffer=$(cat "error_buffer")
+		local error_buffer=$(cat 'error_buffer')
 		printf 'details:\n%s\n' "$error_buffer" >&2
-		rm -f error_buffer
+		rm -f 'error_buffer'
 	fi
 
 	printf '\n'
@@ -53,12 +60,6 @@ conf_add()
 	local value=$3
 
 	printf '%s="%s"\n' "$key" "$value" >> "$file"
-}
-
-
-dos2unix_eoln()
-{
-	cat "$1" | tr -d "\r"
 }
 
 
@@ -83,7 +84,7 @@ unquote()
 	local quoted=$1
 
 	local unquoted=${quoted:1:${#quoted}-2}
-	printf "%s\n" "$unquoted"
+	printf '%s\n' "$unquoted"
 }
 
 

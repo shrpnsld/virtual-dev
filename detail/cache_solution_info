@@ -24,7 +24,7 @@ fi
 version=$(detail/vs_version "$solution_path")
 if [ -z "$version" ]
 then
-	printf 'Failed to determine Visual Studio version for %s\nPlease specify it explicitly: ' "${solution_path#$working_dir/}"
+	printf_message 'Failed to determine Visual Studio version for %s\nPlease specify it explicitly: ' "${solution_path#$working_dir/}"
 	while true
 	do
 		read version
@@ -33,7 +33,7 @@ then
 			break
 		fi
 
-		printf '%s\n' 'error: bad version number'
+		printf_message '%s\n' 'error: bad version number'
 	done
 fi
 
