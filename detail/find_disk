@@ -43,6 +43,11 @@ trap "rm -f \"$id_path\"" EXIT
 while read -r disk
 do
 	output=$(detail/"$vm"/execute "if exist $disk\\$id (echo 1) else (echo 0)") || exit 1
+	if [ $? == 1 ]
+	then
+		exit 1
+	fi
+
 	if [ $output == '1' ]
 	then
 		printf '%s\n' "$disk"

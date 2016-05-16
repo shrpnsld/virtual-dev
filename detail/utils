@@ -1,31 +1,15 @@
-try()
+red_text='\e[0;31m'
+no_color_text='\e[0m'
+
+
+one_level_name()
 {
-	rm -f 'error_buffer'
+	local script_directory=$(dirname $1)
+	local script_parent_directory=$(basename "$script_directory")
+	local script_base_name=$(basename $1)
+	local script_name="$script_parent_directory/$script_base_name"
 
-	local output=$("$@" 2>&1)
-	if [ $? -ne 0 ]
-	then
-		printf "$output" > 'error_buffer'
-		return 1
-	fi
-
-	if [ ! -z "$output" ]
-	then
-		printf '%s\n' "$output"
-	fi
-}
-
-
-catch()
-{
-	if [ $? == 0 ]
-	then
-		return 0
-	fi
-
-	"$@"
-
-	exit 1
+	printf '%s\n' "$script_name"
 }
 
 
@@ -36,20 +20,18 @@ printf_message()
 }
 
 
-print_vdev_error()
+printf_stderr()
 {
-	local message=$(printf "$@")
+	printf "$@" >&2
+}
 
-	printf '** virtual-dev error: %s\n' "$message" >&2
 
-	if [ -f 'error_buffer' ]
-	then
-		local error_buffer=$(cat 'error_buffer')
-		printf 'details:\n%s\n' "$error_buffer" >&2
-		rm -f 'error_buffer'
-	fi
-
-	printf '\n'
+printf_vdev_error()
+{
+	local script_name=$(one_level_name $0)
+	printf_stderr "$red_text"'%s error:'"$no_color_text"' ' "$script_name"
+	printf_stderr "$@"
+	printf_stderr '\n\n'
 }
 
 
@@ -103,45 +85,6 @@ make_solution_cache_path()
 
 	local solution_cache_dir=$(make_solution_cache_name "$solution_path")
 	printf '%s\n' "$out_dir/$solution_cache_dir"
-}
-
-
-assert_file_readable()
-{
-	local path=$1
-
-	if [ ! -r "$path" ]
-	then
-		print_vdev_error 'cannot read file "%s"' "$path"
-		exit 1
-	fi
-}
-
-
-print_custom_vdev_error()
-{
-	local default_message=$1
-	local user_message=$2
-
-	if [ -n "$user_message" ]
-	then
-		print_vdev_error "$user_message"
-	else
-		print_vdev_error "$default_message"
-	fi
-}
-
-
-assert_dir_exists()
-{
-	local path=$1
-	local error_message=$2
-
-	if [ ! -d "$path" ]
-	then
-		print_custom_vdev_error 'directory '"$path"' does not exist' "$error_message"
-		exit 1
-	fi
 }
 
 

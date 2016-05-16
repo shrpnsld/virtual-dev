@@ -8,6 +8,14 @@ export vdev_dir="$working_dir/.vdev"
 source detail/utils
 
 
+# 'vm' configuration
+
+# for future extensibility
+VirtualBox='VBoxManage'
+vm='VirtualBox'
+vm_manage=$(which "${!vm}")
+
+
 help_message=\
 'Usage:
 	Path/To/virtual-dev/init [guest_name] [user] [password]
@@ -19,7 +27,7 @@ help_message=\
 
 if [ $# -ne 3 ]
 then
-	print_vdev_error 'wrong number of arguments'
+	printf_vdev_error 'wrong number of arguments'
 	printf_message '%s' "$help_message"
 	exit 1
 fi
@@ -29,18 +37,17 @@ user=$2
 password=$3
 
 
+if ! detail/"$vm"/vm_exists "$guest_name"
+then
+	printf_vdev_error '"%s" does not exist' "$guest_name"
+	exit 1
+fi
+
+
 #
 # Main
 
 project_root="$working_dir"
-
-
-# 'vm' configuration
-
-# for future extensibility
-VirtualBox='VBoxManage'
-vm='VirtualBox'
-vm_manage=$(which "${!vm}")
 
 
 rm -rf "$vdev_dir"
@@ -63,21 +70,33 @@ project_name=$(basename "$project_root")
 
 if detail/"$vm"/is_running "$guest_name"
 then
-	print_vdev_error '"%s" is currently running, please shut it down' "$guest_name"
+	printf_vdev_error '"%s" is currently running, please shut it down' "$guest_name"
 	exit 1
 fi
 
 printf_message 'Creating working directory on "%s"...' "$guest_name"
-try detail/"$vm"/shared_folder "$project_name" "$project_root" 1> /dev/null
-catch print_vdev_error 'failed to create shared folder'
+detail/"$vm"/shared_folder "$project_name" "$project_root"
+if [ $? != 0 ]
+then
+	printf_vdev_error 'failed to create shared folder'
+	exit 1
+fi
 
 printf_message 'Waiting for "%s" to start...' "$guest_name"
-try detail/"$vm"/start_vm
-catch print_vdev_error 'failed to start "%s"' "$guest_name"
+detail/"$vm"/start_vm
+if [ $? != 0 ]
+then
+	printf_vdev_error 'failed to start "%s"' "$guest_name"
+	exit 1
+fi
 
-printf_message 'Waiting for "net" utility to be available (requires "%s" to login)...' "$user"
-output=$(try detail/find_disk "$project_root")
-catch print_vdev_error 'failed to find shared disk with project'
+printf_message 'Waiting for "%s" to login...' "$user"
+output=$(detail/find_disk "$project_root")
+if [ $? != 0 ]
+then
+	printf_vdev_error 'failed to find shared disk with project'
+	exit 1
+fi
 
 guest_shared_disk="$output"
 
