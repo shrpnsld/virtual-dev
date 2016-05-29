@@ -116,6 +116,7 @@ conf_add "$vdevrc_conf" 'guest_project_property_bat' '$guest_vdevrc_guest_dir/pr
 conf_add "$vdevrc_conf" 'guest_build_bat' '$guest_vdevrc_guest_dir/build.bat'
 conf_add "$vdevrc_conf" 'guest_run_bat' '$guest_vdevrc_guest_dir/run.bat'
 conf_add "$vdevrc_conf" 'guest_clean_bat' '$guest_vdevrc_guest_dir/clean.bat'
+conf_add "$vdevrc_conf" 'guest_rebuild_bat' '$guest_vdevrc_guest_dir/rebuild.bat'
 
 
 printf_message 'Done.'
