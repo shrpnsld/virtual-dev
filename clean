@@ -73,7 +73,7 @@ vs_version=$(dictionary_find "$solution_cache_path" 'version')
 solution_dir=$(dirname "$solution_path")
 project_path=$(dictionary_find "$solution_cache_path" "$target")
 guest_project_path="$guest_root_dir/$solution_dir/$project_path"
-detail/"$vm"/execute "$guest_clean_bat" "$vs_version" "$guest_project_path" "$configuration"
+detail/"$vm"/execute "$guest_clean_bat" "$vs_version" "$guest_project_path" "$configuration" | detail/error_format_mvs_to_gcc
 retval=$?
 printf '\n' # if put newline in Windows then it can be swallowed
 
