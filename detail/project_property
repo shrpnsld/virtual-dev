@@ -32,7 +32,7 @@ sed '/<Project .*>/a\
 
 trap "rm -f \"$working_project_file_path\"" EXIT
 
-output=$(detail/"$vm"/execute "$guest_build_bat" "$vs_version" "$guest_root_dir/$solution_dir/$working_project_file" 'VDevGetProperty' "$configuration") || exit
+output=$(detail/"$vm"/execute "$guest_build_bat" "$vs_version" "$guest_root_dir/$solution_dir/$working_project_file" 'VDevGetProperty' "$configuration" | trim_eoln) || exit
 line=$(grep "$property_line" <<< "$output")
 property_value=${line#*$property_line}
 if [ -z $property_value ]

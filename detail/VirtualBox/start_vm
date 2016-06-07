@@ -13,7 +13,7 @@ checkstr='running'
 
 while [ true ]
 do
-	output=$(detail/"$vm"/execute "echo $checkstr" 2> /dev/null)
+	output=$(detail/"$vm"/execute "echo $checkstr" 2> /dev/null | trim_eoln)
 	if [ $? == 0 ] && [ "$output" == "$checkstr" ]
 	then
 		break

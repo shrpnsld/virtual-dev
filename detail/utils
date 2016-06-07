@@ -53,6 +53,12 @@ dos2unix_path()
 }
 
 
+trim_eoln()
+{
+	sed -e $'s/\r$//g'
+}
+
+
 escape_backslashes()
 {
 	local dos_path=$1
