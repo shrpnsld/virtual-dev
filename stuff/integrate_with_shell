@@ -1,0 +1,31 @@
+#!/bin/bash
+
+config_header='# virtual-dev'
+virtual_dev_path=$($(cd $(dirname $0)); pwd)
+config_string=\
+"$config_header"'\
+export VIRTUAL_DEV='"$virtual_dev_path"'\
+alias vdev-init="$VIRTUAL_DEV/init"\
+alias vdev-build="$VIRTUAL_DEV/build"\
+alias vdev-rebuild="$VIRTUAL_DEV/rebuild"\
+alias vdev-clean="$VIRTUAL_DEV/clean"\
+alias vdev-run="$VIRTUAL_DEV/run"'
+
+
+config_file="${HOME}/.profile"
+
+
+#
+# Main
+
+grep --quiet "$config_header" "$config_file"
+if [ $? == 0 ]
+then
+	exit
+fi
+
+sed -i -e '$a\
+\
+'"$config_string"'
+' "$config_file"
+
