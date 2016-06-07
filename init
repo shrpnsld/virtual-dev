@@ -106,7 +106,7 @@ printf_message 'Finishing initialization...'
 
 # Configuration
 
-cp -R guest "$vdev_dir/"
+cp -R detail/guest "$vdev_dir/"
 
 vdevrc_conf="$vdev_dir/conf"
 
