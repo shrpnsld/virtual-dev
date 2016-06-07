@@ -4,7 +4,7 @@ no_color_text='\e[0m'
 
 one_level_name()
 {
-	local script_directory=$(dirname $1)
+	local script_directory=$(pwd "$(dirname $1)")
 	local script_parent_directory=$(basename "$script_directory")
 	local script_base_name=$(basename $1)
 	local script_name="$script_parent_directory/$script_base_name"

@@ -22,7 +22,7 @@ source detail/dictionary
 
 help_message=\
 'Usages:
-	Path/To/virtual-dev/clean <Path/To/Solution.sln> <ProjectName> <Debug/Release/Other>
+    Path/To/virtual-dev/clean <Path/To/Solution.sln> <ProjectName> <Debug/Release/Other>
 '
 
 

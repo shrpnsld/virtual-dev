@@ -21,7 +21,7 @@ source detail/dictionary
 
 help_message=\
 'Usage:
-	Path/To/virtual-dev/build <Path/To/Solution.sln> <ProjectName> <Debug/Release/Other>
+    Path/To/virtual-dev/build <Path/To/Solution.sln> <ProjectName> <Debug/Release/Other>
 '
 
 
