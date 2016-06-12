@@ -5,7 +5,15 @@ source "$vdev_dir/vm"
 
 
 #
+# Parameters
+
+executable_path=$1
+
+
+#
 # Main
 
-"$vm_manage" guestcontrol "$guest_name" run --exe 'cmd.exe' --username "$user" --password "$password" --wait-stdout --wait-stderr '/E:ON' '/Q' '/C' "$@"
+executable_name=$(basename "$executable_path")
+
+"$vm_manage" guestcontrol "$guest_name" run --exe "$executable_path" --username "$user" --password "$password" --wait-stdout --wait-stderr --putenv virtual_dev_arguments="$virtual_dev_arguments" "$executable_name" "${@:2}"
 

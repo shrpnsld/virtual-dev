@@ -1,0 +1,132 @@
+#!/bin/bash
+
+export working_dir=$(pwd)
+cd $(dirname $0)
+export vdev_dir="$working_dir/.vdev"
+
+
+source detail/utils
+
+
+if [ ! -d "$vdev_dir" ]
+then
+	printf_vdev_error 'current path doesn'"'"'t have any virtual-dev configuration'
+	exit 1
+fi
+
+source "$vdev_dir/vm"
+source "$vdev_dir/conf"
+source detail/dictionary
+
+
+HELP_MESSAGE=\
+'Usage:
+	Path/To/virtual-dev/msbuild (<vs-version> | <solution-path>) [<msbuild-options>...]
+
+Options:
+	<vs-version>     Set Visual Studio version.
+	<solution-path>  Detect Visual Studio version from solution file.
+'
+
+
+#
+# Parameters
+
+vs_version=$1
+
+
+#
+# Funtions
+
+detect_solution_version()
+{
+	local solution_path=$1
+
+	local solution_absolute_path="$working_dir/$solution_path"
+	local solution_cache_dir=$(make_solution_cache_path "$solution_path" "$vdev_dir/cache")
+	local solution_cache_path="$solution_cache_dir/solution.cache"
+	detail/cache_solution_info "$solution_absolute_path" "$solution_cache_path"
+	if [ $? != 0 ]
+	then
+		return 1
+	fi
+
+	dictionary_find "$solution_cache_path" 'version'
+}
+
+
+vs_version_from_parameters()
+{
+	local parameters=("$@")
+
+	local first_parameter="${parameters[0]}"
+	if [[ $first_parameter =~ ^[0-9]+$ ]]
+	then
+		printf '%s\n' "$first_parameter"
+		return
+	else
+		local solution_path="$first_parameter"
+		if [ ! -r "$working_dir/$solution_path" ]
+		then
+			printf_vdev_error 'solution file "%s" does not exists or not readable' "$solution_path"
+			exit 1
+		fi
+
+		detect_solution_version "$solution_path"
+		if [ $? != 0 ]
+		then
+			return 1
+		fi
+
+		return
+	fi
+}
+
+
+#
+# Paratemers
+
+if [ $# \< 1 ]
+then
+	printf_vdev_error 'too few arguments'
+	printf '%s\n' "$HELP_MESSAGE"
+	exit 1
+fi
+
+
+#
+# Main
+
+if ! detail/"$vm"/vm_exists "$guest_name"
+then
+	printf_vdev_error '"%s" does not exist' "$guest_name"
+	exit 1
+fi
+
+if ! detail/"$vm"/is_running "$guest_name"
+then
+	printf_vdev_error '"%s" is not running' "$guest_name"
+	exit 1
+fi
+
+
+vs_version=$(vs_version_from_parameters "$@")
+if [ $? != 0 ]
+then
+	exit 1
+fi
+
+msbuild_arguments=("${@:2}")
+
+# passing arguments through environment variable, because "cmd.exe" will remove "=" character from arguments like "/property:configuration=Release"
+export virtual_dev_arguments="${msbuild_arguments[@]}"
+detail/"$vm"/execute "$guest_msbuild_bat" "$guest_root_dir" "$vs_version" | detail/error_format_mvs_to_gcc
+retval=${PIPESTATUS[0]}
+if [ $retval == 1 ]
+then
+	printf_vdev_error 'failed to execute build command'
+	exit 1
+fi
+
+exit $retval
+

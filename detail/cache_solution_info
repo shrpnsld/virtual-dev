@@ -24,28 +24,9 @@ fi
 version=$(detail/vs_version "$solution_path")
 if [ -z "$version" ]
 then
-	printf_message 'Failed to determine Visual Studio version for %s\nPlease specify it explicitly: ' "${solution_path#$working_dir/}"
-	while true
-	do
-		read version
-		if [[ $version =~ ^[0-9]+$ ]]
-		then
-			break
-		fi
-
-		printf_message '%s\n' 'error: bad version number'
-	done
+	printf_vdev_error 'failed to detect solution version'
+	exit 1
 fi
 
 dictionary_insert "$solution_cache" 'version' "$version"
-
-projects=$(grep 'Project(.*) = ' "$solution_path")
-while read -r project
-do
-	fields=${project#*= }
-	project_name=$(unquote $(awk -F', ' '{ print $1 }' <<< "$fields"))
-	project_dos_path=$(unquote $(awk -F', ' '{ print $2 }' <<< "$fields"))
-	project_path=$(dos2unix_path "$project_dos_path")
-	dictionary_insert "$solution_cache" "$project_name" "$project_path"
-done <<< "$projects"
 
