@@ -1,9 +1,11 @@
 #!/bin/bash
 
+source "$vdev_dir/vm"
+
 
 #
 # Main
 
-version=$(VBoxManage --version)
+version=$("$vm_manage" --version)
 printf '%s\n' "${version:0:1}"
 
