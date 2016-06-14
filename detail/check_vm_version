@@ -1,0 +1,15 @@
+#!/bin/bash
+
+
+#
+# Parameters
+
+vm_version=$1
+required_versions_file=$2
+
+
+#
+# Main
+
+grep --quiet "$vm_version" "$required_versions_file"
+

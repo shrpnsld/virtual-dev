@@ -37,6 +37,14 @@ user=$2
 password=$3
 
 
+vm_version=$(detail/"$vm"/version)
+if ! detail/check_vm_version "$vm_version" detail/"$vm"/required_versions
+then
+	printf_vdev_error 'current version of VirtualBox is not supported\nRequired versions are: %s' "$(cat detail/"$vm"/required_versions)"
+	exit 1
+fi
+
+
 if ! detail/"$vm"/vm_exists "$guest_name"
 then
 	printf_vdev_error '"%s" does not exist' "$guest_name"

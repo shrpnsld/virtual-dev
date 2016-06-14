@@ -1,0 +1,9 @@
+#!/bin/bash
+
+
+#
+# Main
+
+version=$(VBoxManage --version)
+printf '%s\n' "${version:0:1}"
+
