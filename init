@@ -74,47 +74,10 @@ then
 	exit 1
 fi
 
-printf_message 'Creating working directory on "%s"...' "$guest_name"
 detail/"$vm"/shared_folder "$project_name" "$project_root"
 if [ $? != 0 ]
 then
-	printf_vdev_error 'failed to create shared folder'
+	printf_vdev_error 'failed to create shared folder on "%s"' "$vm"
 	exit 1
 fi
-
-printf_message 'Waiting for "%s" to start...' "$guest_name"
-detail/"$vm"/start_vm
-if [ $? != 0 ]
-then
-	printf_vdev_error 'failed to start "%s"' "$guest_name"
-	exit 1
-fi
-
-printf_message 'Waiting for "%s" to login...' "$user"
-output=$(detail/find_disk "$project_root")
-if [ $? != 0 ]
-then
-	printf_vdev_error 'failed to find shared disk with project'
-	exit 1
-fi
-
-guest_shared_disk="$output"
-
-
-printf_message 'Finishing initialization...'
-
-
-# Configuration
-
-cp -R detail/guest "$vdev_dir/"
-
-vdevrc_conf="$vdev_dir/conf"
-
-conf_add "$vdevrc_conf" 'guest_root_dir' "$guest_shared_disk"
-conf_add "$vdevrc_conf" 'guest_vdevrc_guest_dir' '$guest_root_dir/.vdev/guest/'
-conf_add "$vdevrc_conf" 'guest_msbuild_bat' '$guest_vdevrc_guest_dir/msbuild.bat'
-conf_add "$vdevrc_conf" 'guest_run_bat' '$guest_vdevrc_guest_dir/run.bat'
-
-
-printf_message 'Done.'
 

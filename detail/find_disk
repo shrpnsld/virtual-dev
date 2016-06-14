@@ -17,7 +17,7 @@ id_dir=$1
 
 while [ true ]
 do
-	output=$(detail/"$vm"/execute 'net' 'use')
+	output=$(detail/"$vm"/execute 'net.exe' 'use')
 	if [ $? == 1 ]
 	then
 		exit 1
@@ -42,7 +42,7 @@ trap "rm -f \"$id_path\"" EXIT
 
 while read -r disk
 do
-	output=$(detail/"$vm"/execute "if exist $disk\\$id (echo 1) else (echo 0)" | trim_eoln) || exit 1
+	output=$(detail/"$vm"/execute 'cmd.exe' '/Q' '/C' "if exist $disk\\$id (echo 1) else (echo 0)" | trim_eoln) || exit 1
 	if [ $? == 1 ]
 	then
 		exit 1

@@ -15,7 +15,6 @@ then
 fi
 
 source "$vdev_dir/vm"
-source "$vdev_dir/conf"
 source detail/dictionary
 
 
@@ -83,13 +82,35 @@ vs_version_from_parameters()
 }
 
 
+create_config_file()
+{
+	output=$(detail/find_disk "$working_dir")
+	if [ $? != 0 ]
+	then
+		printf_vdev_error 'failed to find shared disk with project'
+		exit 1
+	fi
+
+	guest_shared_disk="$output"
+
+	# Configuration
+
+	cp -R detail/guest "$vdev_dir/"
+
+	conf_add "$vdevrc_conf" 'guest_root_dir' "$guest_shared_disk"
+	conf_add "$vdevrc_conf" 'guest_vdevrc_guest_dir' '$guest_root_dir/.vdev/guest/'
+	conf_add "$vdevrc_conf" 'guest_msbuild_bat' '$guest_vdevrc_guest_dir/msbuild.bat'
+	conf_add "$vdevrc_conf" 'guest_run_bat' '$guest_vdevrc_guest_dir/run.bat'
+}
+
+
 #
 # Paratemers
 
 if [ $# \< 1 ]
 then
 	printf_vdev_error 'too few arguments'
-	printf '%s\n' "$HELP_MESSAGE"
+	printf_message '%s' "$HELP_MESSAGE"
 	exit 1
 fi
 
@@ -105,9 +126,21 @@ fi
 
 if ! detail/"$vm"/is_running "$guest_name"
 then
-	printf_vdev_error '"%s" is not running' "$guest_name"
-	exit 1
+	detail/"$vm"/start_vm
+	if [ $? != 0 ]
+	then
+		printf_vdev_error 'failed to start "%s"' "$guest_name"
+		exit 1
+	fi
 fi
+
+vdevrc_conf="$vdev_dir/conf"
+if [ ! -f "$vdevrc_conf" ]
+then
+	create_config_file
+fi
+
+source "$vdev_dir/conf"
 
 
 vs_version=$(vs_version_from_parameters "$@")
