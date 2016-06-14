@@ -2,6 +2,12 @@ red_text='\e[0;31m'
 no_color_text='\e[0m'
 
 
+has_terminal()
+{
+	tty -s
+}
+
+
 one_level_name()
 {
 	local script_directory=$(pwd "$(dirname $1)")
@@ -29,7 +35,14 @@ printf_stderr()
 printf_vdev_error()
 {
 	local script_name=$(one_level_name $0)
-	printf_stderr "$red_text"'%s error:'"$no_color_text"' ' "$script_name"
+
+	if has_terminal
+	then
+		printf_stderr "$red_text"'%s error:'"$no_color_text"' ' "$script_name"
+	else
+		printf_stderr '%s error: ' "$script_name"
+	fi
+
 	printf_stderr "$@"
 	printf_stderr '\n\n'
 }
