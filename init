@@ -37,6 +37,25 @@ user=$2
 password=$3
 
 
+#
+# Main
+
+# Configuration
+
+rm -rf "$vdev_dir"
+mkdir "$vdev_dir"
+
+vdevrc_vm="$vdev_dir/vm"
+
+conf_add "$vdevrc_vm" 'vm' "$vm"
+conf_add "$vdevrc_vm" 'vm_manage' "$vm_manage"
+conf_add "$vdevrc_vm" 'guest_name' "$guest_name"
+conf_add "$vdevrc_vm" 'user' "$user"
+conf_add "$vdevrc_vm" 'password' "$password"
+
+
+# Checks
+
 vm_version=$(detail/"$vm"/version)
 if ! detail/check_vm_version "$vm_version" detail/"$vm"/required_versions
 then
@@ -52,29 +71,11 @@ then
 fi
 
 
-#
-# Main
+# Shared folder
 
 project_root="$working_dir"
 
-
-rm -rf "$vdev_dir"
-mkdir "$vdev_dir"
-
-
-vdevrc_vm="$vdev_dir/vm"
-
-conf_add "$vdevrc_vm" 'vm' "$vm"
-conf_add "$vdevrc_vm" 'vm_manage' "$vm_manage"
-conf_add "$vdevrc_vm" 'guest_name' "$guest_name"
-conf_add "$vdevrc_vm" 'user' "$user"
-conf_add "$vdevrc_vm" 'password' "$password"
-
-
-# Shared folder
-
 project_name=$(basename "$project_root")
-
 
 if detail/"$vm"/is_running "$guest_name"
 then
