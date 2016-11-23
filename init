@@ -6,6 +6,7 @@ export vdev_dir="$working_dir/.vdev"
 
 
 source detail/utils
+source detail/dictionary
 
 
 # 'vm' configuration
@@ -47,11 +48,13 @@ mkdir "$vdev_dir"
 
 vdevrc_vm="$vdev_dir/vm"
 
-conf_add "$vdevrc_vm" 'vm' "$vm"
-conf_add "$vdevrc_vm" 'vm_manage' "$vm_manage"
-conf_add "$vdevrc_vm" 'guest_name' "$guest_name"
-conf_add "$vdevrc_vm" 'user' "$user"
-conf_add "$vdevrc_vm" 'password' "$password"
+dictionary_insert "$vdevrc_vm" 'vm' "$vm"
+dictionary_insert "$vdevrc_vm" 'vm_manage' "$vm_manage"
+dictionary_insert "$vdevrc_vm" 'guest_name' "$guest_name"
+dictionary_insert "$vdevrc_vm" 'user' "$user"
+dictionary_insert "$vdevrc_vm" 'password' "$password"
+
+dictionary_load "$vdevrc_vm" 'vm' 'guest_name'
 
 
 # Checks

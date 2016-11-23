@@ -1,7 +1,7 @@
 #!/bin/bash
 
 source detail/utils
-source "$vdev_dir/vm"
+source detail/dictionary
 
 
 #
@@ -12,6 +12,8 @@ executable_path=$1
 
 #
 # Main
+
+dictionary_load "$vdev_dir/vm" 'vm_manage' 'guest_name' 'user' 'password'
 
 executable_name=$(basename "$executable_path")
 

@@ -1,10 +1,12 @@
 #!/bin/bash
 
-source "$vdev_dir/vm"
+source detail/dictionary
 
 
 #
 # Main
+
+dictionary_load "$vdev_dir/vm" 'vm_manage'
 
 version=$("$vm_manage" --version)
 printf '%s\n' "${version:0:1}"
