@@ -1,5 +1,4 @@
-red_text='\e[0;31m'
-no_color_text='\e[0m'
+source detail/constants
 
 
 has_terminal()
@@ -38,7 +37,7 @@ printf_vdev_error()
 
 	if has_terminal
 	then
-		printf_stderr "$red_text"'%s error:'"$no_color_text"' ' "$script_name"
+		printf_stderr "$RED_TEXT"'%s error:'"$NEUTRAL_TEXT"' ' "$script_name"
 	else
 		printf_stderr '%s error: ' "$script_name"
 	fi

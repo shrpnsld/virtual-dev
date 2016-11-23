@@ -1,7 +1,8 @@
 #!/bin/bash
 
-source "$vdev_dir/vm"
+source detail/constants
 source detail/utils
+source detail/dictionary
 
 
 #
@@ -12,6 +13,9 @@ id_dir=$1
 
 #
 # Main
+
+vdev_vm_file="$vdev_dir/$VM_FILE"
+dictionary_load "$vdev_vm_file" 'vm'
 
 # waiting for the service to be available
 

@@ -5,6 +5,7 @@ cd $(dirname $0)
 export vdev_dir="$working_dir/.vdev"
 
 
+source detail/constants
 source detail/utils
 source detail/dictionary
 
@@ -46,15 +47,15 @@ password=$3
 rm -rf "$vdev_dir"
 mkdir "$vdev_dir"
 
-vdevrc_vm="$vdev_dir/vm"
+vdev_vm_file="$vdev_dir/$VM_FILE"
 
-dictionary_insert "$vdevrc_vm" 'vm' "$vm"
-dictionary_insert "$vdevrc_vm" 'vm_manage' "$vm_manage"
-dictionary_insert "$vdevrc_vm" 'guest_name' "$guest_name"
-dictionary_insert "$vdevrc_vm" 'user' "$user"
-dictionary_insert "$vdevrc_vm" 'password' "$password"
+dictionary_insert "$vdev_vm_file" 'vm' "$vm"
+dictionary_insert "$vdev_vm_file" 'vm_manage' "$vm_manage"
+dictionary_insert "$vdev_vm_file" 'guest_name' "$guest_name"
+dictionary_insert "$vdev_vm_file" 'user' "$user"
+dictionary_insert "$vdev_vm_file" 'password' "$password"
 
-dictionary_load "$vdevrc_vm" 'vm' 'guest_name'
+dictionary_load "$vdev_vm_file" 'vm' 'guest_name'
 
 
 # Checks
