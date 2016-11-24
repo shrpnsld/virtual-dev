@@ -1,0 +1,211 @@
+#!/bin/bash
+
+export working_dir=$(pwd)
+cd $(dirname $0)
+export vdev_dir="$working_dir/.vdev"
+
+
+source detail/constants
+source detail/utils
+source detail/dictionary
+
+
+if [ ! -d "$vdev_dir" ]
+then
+	printf_vdev_error 'current path doesn'"'"'t have any virtual-dev configuration'
+	exit 1
+fi
+
+
+HELP_MESSAGE=\
+'Usage:
+    vdev-run-vcxproj <Path/To/Project.vcxproj> [<MSBuild-arguments>...]                         (1)
+    vdev-run-vcxproj <Path/To/Solution.sln> <Path/To/Project.vcxproj> [<MSBuild-arguments>...]  (2)
+    vdev-run-vcxproj <MVS-version> <Path/To/Project.vcxproj> [<MSBuild-arguments>...]           (3)
+
+Options:
+    <Path/To/Project.vcxproj>  Path to .vcxproj file; Visual Studio version will be detected by searching corresponding solution file.
+    <Path/To/Solution.sln>     Specify solution file to detect Visual Studio version from it.
+    <MVS-version>              Specify Visual Studio version explicitly.
+    <MSBuild-arguments>        Arguments for MSBuild.
+
+Notes:
+    "Paths/To/Some.thing" should be relative.
+
+    Form (1) passes it'"'"'s first argument to MSBuild.
+'
+
+
+#
+# Functions
+
+check_paths_file()
+{
+	local paths_file=$1
+
+	local found_disk=$(detail/find_disk "$working_dir")
+	local guest_root_dir=$(dictionary_find "$paths_file" 'guest_root_dir')
+	if [ $? == 0 ] && [ "$found_disk" == "$guest_root_dir" ]
+	then
+		return
+	fi
+
+	local guest_vdev_guest_dir="$found_disk/.vdev/guest"
+
+	dictionary_insert "$paths_file" 'guest_root_dir' "$found_disk"
+	dictionary_insert "$paths_file" 'guest_msbuild_bat' "$guest_vdev_guest_dir/msbuild.bat"
+	dictionary_insert "$paths_file" 'guest_run_bat' "$guest_vdev_guest_dir/run.bat"
+}
+
+
+vs_version_for_parameters()
+{
+	local first_parameter=$1
+
+	if [[ $first_parameter =~ ^[0-9]+$ ]]
+	then
+		printf '%s\n' "$first_parameter"
+		return
+	fi
+
+	if ! [[ $first_parameter =~ .*\.sln ]]
+	then
+		local solution_path=$(detail/find_solution_for_project "$first_parameter")
+	fi
+
+	if [ -z "$solution_path" ]
+	then
+		local solution_path="$working_dir/$first_parameter"
+	fi
+
+	if [ ! -r "$solution_path" ]
+	then
+		return 1
+	fi
+
+	detail/vs_version "$solution_path"
+	if [ $? != 0 ]
+	then
+		return 1
+	fi
+}
+
+
+project_path_from_parameters()
+{
+	local parameters=("$@")
+
+	local first_parameter="${parameters[0]}"
+	if [[ $first_parameter =~ ^[0-9]+$ ]] || [[ $first_parameter =~ .*\.sln ]]
+	then
+		printf '%s\n' "${parameters[1]}"
+	else
+		printf '%s\n' "${parameters[0]}"
+	fi
+}
+
+
+msbuild_arguments_from_parameters()
+{
+	local first_parameter=$1
+
+	if [[ $first_parameter =~ ^[0-9]+$ ]] || [[ $first_parameter =~ .*\.sln ]]
+	then
+		printf '%s\n' "${@:3}"
+	else
+		printf '%s\n' "${@:2}"
+	fi
+}
+
+
+#
+# Main
+
+vdev_vm_file="$vdev_dir/$VM_FILE"
+dictionary_load "$vdev_vm_file" 'vm' 'guest_name'
+
+vdev_guest_paths_file="$vdev_dir/$GUEST_PATHS_FILE"
+dictionary_load "$vdev_guest_paths_file" 'guest_root_dir' 'guest_run_bat'
+
+
+# Checks
+
+if ! detail/"$vm"/vm_exists "$guest_name"
+then
+	printf_vdev_error '"%s" does not exist' "$guest_name"
+	exit 1
+fi
+
+if ! detail/"$vm"/is_running "$guest_name"
+then
+	printf_vdev_error '"%s" is not running' "$guest_name"
+	exit 1
+fi
+
+
+# Parameters
+
+if [ $# \< 1 ]
+then
+	printf_vdev_error 'wrong number of arguments'
+	printf_message '%s' "$HELP_MESSAGE"
+	exit 1
+fi
+
+
+# Paths file
+
+vdev_guest_paths_file="$vdev_dir/$GUEST_PATHS_FILE"
+
+detail/check_paths_file "$vdev_guest_paths_file"
+dictionary_load "$vdev_guest_paths_file" 'guest_root_dir' 'guest_msbuild_bat'
+
+
+vs_version=$(vs_version_for_parameters "$@")
+if [ $? != 0 ]
+then
+	printf_vdev_error 'failed to detect Visual Studio version. Specify it explicitly'
+	exit 1
+fi
+
+project_path=$(project_path_from_parameters "$@")
+msbuild_arguments=($(msbuild_arguments_from_parameters "$@"))
+
+out_dir=$(detail/project_property "$vs_version" "$project_path" 'OutDir' "${msbuild_arguments[@]}")
+if [ $? != 0 ]
+then
+	printf_vdev_error 'failed to get project "OutDir" property'
+	exit 1
+fi
+
+out_dir=$(escape_backslashes "$out_dir")
+
+name=$(detail/project_property "$vs_version" "$project_path" 'TargetName' "${msbuild_arguments[@]}")
+if [ $? != 0 ]
+then
+	printf_vdev_error 'failed to get project "TargetName" property'
+	exit 1
+fi
+
+extension=$(detail/project_property "$vs_version" "$project_path" 'TargetExt' "${msbuild_arguments[@]}")
+if [ $? != 0 ]
+then
+	printf_vdev_error 'failed to get project "TargetExt" property'
+	exit 1
+fi
+
+project_dir=$(dirname $project_path)
+guest_project_dir="$guest_root_dir\\$project_dir"
+binary_name="$name$extension"
+detail/"$vm"/execute "$guest_run_bat" "$guest_project_dir" "$out_dir" "$binary_name"
+retval=$?
+printf '\n' # if put newline in Windows then it can be swallowed ???
+
+if [ $retval == 1 ]
+then
+	printf_vdev_error 'failed to execute run command'
+	exit 1
+fi
+
+exit $retval
+

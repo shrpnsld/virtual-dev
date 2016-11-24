@@ -1,0 +1,47 @@
+#!/bin/bash
+
+source detail/constants
+source detail/utils
+source detail/dictionary
+
+
+#
+# Parameters
+
+vs_version=$1
+project_path=$2
+property=$3
+msbuild_arguments=(${@:4})
+
+
+#
+# Main
+
+vdev_vm_file="$vdev_dir/$VM_FILE"
+dictionary_load "$vdev_vm_file" 'vm'
+
+vdev_guest_paths_file="$vdev_dir/$GUEST_PATHS_FILE"
+dictionary_load "$vdev_guest_paths_file" 'guest_root_dir' 'guest_msbuild_bat'
+
+property_line='virtual-dev property:'
+
+working_project_path="${project_path%.*}.vdev"
+working_project_absolute_path="$working_dir/${project_path%.*}.vdev"
+
+sed '/<Project .*>/a\
+<Target Name="VDevGetProperty"><Message Text="'"$property_line"'$('"$property"')"/></Target>
+' "$working_dir/$project_path" > "$working_project_absolute_path"
+
+trap "rm -f \"$working_project_path\"" EXIT
+
+export virtual_dev_arguments="$guest_root_dir/$working_project_path ${msbuild_arguments[@]} /target:VDevGetProperty"
+output=$(detail/"$vm"/execute "$guest_msbuild_bat" "$guest_root_dir" "$vs_version" | trim_eoln) || exit
+line=$(grep "$property_line" <<< "$output")
+property_value=${line#*$property_line}
+if [ -z $property_value ]
+then
+	exit 1
+fi
+
+printf '%s\n' $property_value
+

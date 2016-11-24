@@ -57,6 +57,26 @@ conf_add()
 }
 
 
+expand_dir_path()
+{
+	local path=$1
+
+	local absolute_dir_path=$(cd $path; pwd)
+	printf '%s\n' "$absolute_dir_path"
+}
+
+
+expand_path()
+{
+	local path=$1
+
+	local dir=$(dirname "$path")
+	local base_name=$(basename "$path")
+	local absolute_dir_path=$(expand_dir_path "$dir")
+	printf '%s\n' "$absolute_dir_path/$base_name"
+}
+
+
 dos2unix_path()
 {
 	local dos_path=$1

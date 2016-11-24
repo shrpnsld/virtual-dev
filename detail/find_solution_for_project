@@ -1,0 +1,106 @@
+#!/bin/bash
+
+source detail/utils
+
+
+#
+# Parameters
+
+vcxproj_path=$1
+
+
+#
+# Functions
+
+is_value_in_array()
+{
+	local value=$1
+	local array=("${@:2}")
+
+	for current in "${array[@]}"
+	do
+		if [ "$current" == "$value" ]
+		then
+			return 0
+		fi
+	done
+
+	return 1
+}
+
+
+up()
+{
+	local path=$1
+
+	dirname "$path"
+}
+
+
+find_upward()
+{
+	local where=$1
+	local pattern=$2
+	local predicate=$3
+
+	while true
+	do
+		if [ "$where" == "$working_dir" ]
+		then
+			break
+		fi
+
+		local solution_files=($(find "$where" -maxdepth 1 -type f -name "$pattern"))
+		for solution_file in "${solution_files[@]}"
+		do
+			if $predicate "$solution_file"
+			then
+				printf '%s\n' "$solution_file"
+				return 0
+			fi
+		done
+
+		where=$(up "$where")
+	done
+
+	return 1
+}
+
+
+list_vcxproj_paths()
+{
+	local solution_file_path=$1
+
+	local solution_dir=$(dirname "$solution_file_path")
+	local vcxproj_paths=($(grep '^Project(' "$solution_file_path" | awk -F '" *, *"| = "' '{ print $3 }'))
+	for vcxproj_path in "${vcxproj_paths[@]}"
+	do
+		expand_path "$solution_dir/$vcxproj_path"
+	done
+}
+
+
+solution_has_vcxproj()
+{
+	local vcxproj_file_path=$1
+	local solution_file_path=$2
+
+	local vcxproj_paths=($(list_vcxproj_paths "$solution_file_path"))
+
+	is_value_in_array "$vcxproj_file_path" "${vcxproj_paths[@]}"
+}
+
+
+#
+# Main
+
+absolute_vcxproj_path="$working_dir/$vcxproj_path"
+absolute_vcxproj_dir=$(dirname "$absolute_vcxproj_path")
+solution_file_path=$(find_upward "$absolute_vcxproj_dir" '*.sln' 'solution_has_vcxproj '"$absolute_vcxproj_path")
+if [ $? != 0 ]
+then
+	exit 1
+fi
+
+printf '%s\n' "$solution_file_path"
+
