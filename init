@@ -18,9 +18,9 @@ vm='VirtualBox'
 vm_manage=$(which "${!vm}")
 
 
-help_message=\
+HELP_MESSAGE=\
 'Usage:
-	Path/To/virtual-dev/init <guest_name> <user> <password>
+	vdev-init <guest-name> <user> <password>
 '
 
 
@@ -30,7 +30,7 @@ help_message=\
 if [ $# -ne 3 ]
 then
 	printf_vdev_error 'wrong number of arguments'
-	printf_message '%s' "$help_message"
+	printf_message '%s' "$HELP_MESSAGE"
 	exit 1
 fi
 
@@ -56,6 +56,8 @@ dictionary_insert "$vdev_vm_file" 'user' "$user"
 dictionary_insert "$vdev_vm_file" 'password' "$password"
 
 dictionary_load "$vdev_vm_file" 'vm' 'guest_name'
+
+cp -Rn detail/guest "$vdev_dir/"
 
 
 # Checks

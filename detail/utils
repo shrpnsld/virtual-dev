@@ -7,17 +7,6 @@ has_terminal()
 }
 
 
-one_level_name()
-{
-	local script_directory=$(pwd "$(dirname $1)")
-	local script_parent_directory=$(basename "$script_directory")
-	local script_base_name=$(basename $1)
-	local script_name="$script_parent_directory/$script_base_name"
-
-	printf '%s\n' "$script_name"
-}
-
-
 printf_message()
 {
 	printf "$@"
@@ -33,7 +22,7 @@ printf_stderr()
 
 printf_vdev_error()
 {
-	local script_name=$(one_level_name $0)
+	local script_name="vdev-$(basename $0)"
 
 	if has_terminal
 	then
