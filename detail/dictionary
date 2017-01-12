@@ -1,4 +1,4 @@
-dictionary_find()
+dictionary-find()
 {
 	local array=$1
 	local key=$2
@@ -14,7 +14,7 @@ dictionary_find()
 }
 
 
-dictionary_insert()
+dictionary-insert()
 {
 	local array=$1
 	local key=$2
@@ -33,14 +33,14 @@ dictionary_insert()
 }
 
 
-dictionary_load()
+dictionary-load()
 {
 	local conf_path=$1
 	local variables=("${@:2}")
 
 	for variable in ${variables[@]}
 	do
-		local value=$(dictionary_find "$conf_path" "$variable")
+		local value=$(dictionary-find "$conf_path" "$variable")
 		eval $variable=$value
 	done
 }

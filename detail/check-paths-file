@@ -1,0 +1,27 @@
+#!/bin/bash
+
+source detail/dictionary
+
+
+#
+# Parameters
+
+paths_file=$1
+
+
+#
+# Main
+
+found_disk=$(detail/detect-volume "$working_dir")
+guest_root_dir=$(dictionary-find "$paths_file" 'guest_root_dir')
+if [ $? == 0 ] && [ "$found_disk" == "$guest_root_dir" ]
+then
+	exit
+fi
+
+guest_vdev_guest_dir="$found_disk/.vdev/guest"
+
+dictionary-insert "$paths_file" 'guest_root_dir' "$found_disk"
+dictionary-insert "$paths_file" 'guest_msbuild_bat' "$guest_vdev_guest_dir/msbuild.bat"
+dictionary-insert "$paths_file" 'guest_run_bat' "$guest_vdev_guest_dir/run.bat"
+

@@ -12,7 +12,7 @@ source detail/dictionary
 
 if [ ! -d "$vdev_dir" ]
 then
-	printf_vdev_error 'current path doesn'"'"'t have any virtual-dev configuration'
+	printf-vdev-error 'current path doesn'"'"'t have any virtual-dev configuration'
 	exit 1
 fi
 
@@ -45,7 +45,7 @@ vs_version=$1
 #
 # Funtions
 
-vs_version_for_parameters()
+vs-version-for-parameters()
 {
 	local first_parameter=$1
 
@@ -57,7 +57,7 @@ vs_version_for_parameters()
 
 	if ! [[ $first_parameter =~ .*\.sln ]]
 	then
-		local solution_path=$(detail/find_solution_for_project "$first_parameter")
+		local solution_path=$(detail/detect-solution-for-project "$first_parameter")
 	fi
 
 	if [ -z "$solution_path" ]
@@ -70,7 +70,7 @@ vs_version_for_parameters()
 		return 1
 	fi
 
-	detail/vs_version "$solution_path"
+	detail/vs-version "$solution_path"
 	if [ $? != 0 ]
 	then
 		return 1
@@ -78,7 +78,7 @@ vs_version_for_parameters()
 }
 
 
-msbuild_arguments_from_parameters()
+msbuild-arguments-from-parameters()
 {
 	local first_parameter=$1
 
@@ -95,20 +95,20 @@ msbuild_arguments_from_parameters()
 # Main
 
 vdev_vm_file="$vdev_dir/$VM_FILE"
-dictionary_load "$vdev_vm_file" 'vm' 'guest_name'
+dictionary-load "$vdev_vm_file" 'vm' 'guest_name'
 
 
 # Checks
 
-if ! detail/"$vm"/vm_exists "$guest_name"
+if ! detail/"$vm"/vm-exists "$guest_name"
 then
-	printf_vdev_error '"%s" does not exist' "$guest_name"
+	printf-vdev-error '"%s" does not exist' "$guest_name"
 	exit 1
 fi
 
-if ! detail/"$vm"/is_running "$guest_name"
+if ! detail/"$vm"/is-running "$guest_name"
 then
-	printf_vdev_error '"%s" is not running' "$guest_name"
+	printf-vdev-error '"%s" is not running' "$guest_name"
 	exit 1
 fi
 
@@ -117,8 +117,8 @@ fi
 
 if [ $# \< 1 ]
 then
-	printf_vdev_error 'too few arguments'
-	printf_message '%s' "$HELP_MESSAGE"
+	printf-vdev-error 'too few arguments'
+	printf-message '%s' "$HELP_MESSAGE"
 	exit 1
 fi
 
@@ -127,28 +127,29 @@ fi
 
 vdev_guest_paths_file="$vdev_dir/$GUEST_PATHS_FILE"
 
-detail/check_paths_file "$vdev_guest_paths_file"
-dictionary_load "$vdev_guest_paths_file" 'guest_root_dir' 'guest_msbuild_bat'
+detail/check-paths-file "$vdev_guest_paths_file"
+dictionary-load "$vdev_guest_paths_file" 'guest_root_dir' 'guest_msbuild_bat'
 
 
 # msbuild
 
-vs_version=$(vs_version_for_parameters "$@")
+vs_version=$(vs-version-for-parameters "$@")
+echo "VS version: $vs_version"
 if [ $? != 0 ]
 then
-	printf_vdev_error 'failed to detect Visual Studio version. Specify it explicitly.'
+	printf-vdev-error 'failed to detect Visual Studio version. Specify it explicitly.'
 	exit 1
 fi
 
-msbuild_arguments=($(msbuild_arguments_from_parameters "$@"))
+msbuild_arguments=($(msbuild-arguments-from-parameters "$@"))
 
 # passing arguments through environment variable, because "cmd.exe" will remove "=" character from arguments like "/property:configuration=Release"
 export virtual_dev_arguments="${msbuild_arguments[@]}"
-detail/"$vm"/execute "$guest_msbuild_bat" "$guest_root_dir" "$vs_version" | detail/error_format_mvs_to_gcc
+detail/"$vm"/execute "$guest_msbuild_bat" "$guest_root_dir" "$vs_version" | detail/error-format-mvs-to-gcc
 retval=${PIPESTATUS[0]}
 if [ $retval == 1 ]
 then
-	printf_vdev_error 'failed to execute build command.'
+	printf-vdev-error 'failed to execute build command.'
 	exit 1
 fi
 

@@ -14,14 +14,14 @@ path=$2
 #
 # Main
 
-dictionary_load "$vdev_dir/vm" 'vm_manage' 'guest_name'
+dictionary-load "$vdev_dir/vm" 'vm_manage' 'guest_name'
 
 # if there is a shared folder already VBoxManage prints message, but returns without error
 output=$("$vm_manage" sharedfolder add "$guest_name" --name "$name" --hostpath "$path" --automount 2>&1)
 retval=$?
 if [ $retval != 0 ]
 then
-	printf_stderr '%s\n' "$output"
+	printf-stderr '%s\n' "$output"
 	exit $retval
 fi
 

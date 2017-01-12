@@ -13,7 +13,7 @@ executable_path=$1
 #
 # Main
 
-dictionary_load "$vdev_dir/vm" 'vm_manage' 'guest_name' 'user' 'password'
+dictionary-load "$vdev_dir/vm" 'vm_manage' 'guest_name' 'user' 'password'
 
 executable_name=$(basename "$executable_path")
 

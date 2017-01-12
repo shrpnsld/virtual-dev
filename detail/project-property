@@ -18,10 +18,10 @@ msbuild_arguments=(${@:4})
 # Main
 
 vdev_vm_file="$vdev_dir/$VM_FILE"
-dictionary_load "$vdev_vm_file" 'vm'
+dictionary-load "$vdev_vm_file" 'vm'
 
 vdev_guest_paths_file="$vdev_dir/$GUEST_PATHS_FILE"
-dictionary_load "$vdev_guest_paths_file" 'guest_root_dir' 'guest_msbuild_bat'
+dictionary-load "$vdev_guest_paths_file" 'guest_root_dir' 'guest_msbuild_bat'
 
 property_line='virtual-dev property:'
 
@@ -35,7 +35,7 @@ sed '/<Project .*>/a\
 trap "rm -f \"$working_project_path\"" EXIT
 
 export virtual_dev_arguments="$guest_root_dir/$working_project_path ${msbuild_arguments[@]} /target:VDevGetProperty"
-output=$(detail/"$vm"/execute "$guest_msbuild_bat" "$guest_root_dir" "$vs_version" | trim_eoln) || exit
+output=$(detail/"$vm"/execute "$guest_msbuild_bat" "$guest_root_dir" "$vs_version" | trim-eoln) || exit
 line=$(grep "$property_line" <<< "$output")
 property_value=${line#*$property_line}
 if [ -z $property_value ]

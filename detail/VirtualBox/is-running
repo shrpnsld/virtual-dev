@@ -12,7 +12,7 @@ guest_name=$1
 #
 # Main
 
-dictionary_load "$vdev_dir/vm" 'vm_manage' 'guest_name'
+dictionary-load "$vdev_dir/vm" 'vm_manage' 'guest_name'
 
 running_vms=$("$vm_manage" list runningvms)
 grep --quiet "\"$guest_name\".*" <<< "$running_vms"

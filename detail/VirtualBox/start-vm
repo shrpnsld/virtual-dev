@@ -7,13 +7,13 @@ source detail/dictionary
 #
 # Main
 
-dictionary_load "$vdev_dir/vm" 'vm' 'vm_manage' 'guest_name'
+dictionary-load "$vdev_dir/vm" 'vm' 'vm_manage' 'guest_name'
 
 "$vm_manage" startvm "$guest_name" 1> /dev/null || exit 1
 
 while [ true ]
 do
-	output=$(detail/"$vm"/execute 'cmd.exe' '/Q' '/C' 'echo' "$checkstr" 2> /dev/null | trim_eoln)
+	output=$(detail/"$vm"/execute 'cmd.exe' '/Q' '/C' 'echo' "$checkstr" 2> /dev/null | trim-eoln)
 	if [ $? == 0 ] && [ "$output" == "$checkstr" ]
 	then
 		break

@@ -15,7 +15,7 @@ id_dir=$1
 # Main
 
 vdev_vm_file="$vdev_dir/$VM_FILE"
-dictionary_load "$vdev_vm_file" 'vm'
+dictionary-load "$vdev_vm_file" 'vm'
 
 # waiting for the service to be available
 
@@ -46,7 +46,7 @@ trap "rm -f \"$id_path\"" EXIT
 
 while read -r disk
 do
-	output=$(detail/"$vm"/execute 'cmd.exe' '/Q' '/C' "if exist $disk\\$id (echo 1) else (echo 0)" | trim_eoln) || exit 1
+	output=$(detail/"$vm"/execute 'cmd.exe' '/Q' '/C' "if exist $disk\\$id (echo 1) else (echo 0)" | trim-eoln) || exit 1
 	if [ $? == 1 ]
 	then
 		exit 1

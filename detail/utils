@@ -1,52 +1,15 @@
 source detail/constants
 
+#
+# Module private
 
-has_terminal()
+has-terminal()
 {
 	tty -s
 }
 
 
-printf_message()
-{
-	printf "$@"
-	printf '\n'
-}
-
-
-printf_stderr()
-{
-	printf "$@" >&2
-}
-
-
-printf_vdev_error()
-{
-	local script_name="vdev-$(basename $0)"
-
-	if has_terminal
-	then
-		printf_stderr "$RED_TEXT"'%s error:'"$NEUTRAL_TEXT"' ' "$script_name"
-	else
-		printf_stderr '%s error: ' "$script_name"
-	fi
-
-	printf_stderr "$@"
-	printf_stderr '\n\n'
-}
-
-
-conf_add()
-{
-	local file=$1
-	local key=$2
-	local value=$3
-
-	printf '%s="%s"\n' "$key" "$value" >> "$file"
-}
-
-
-expand_dir_path()
+expand-dir-path()
 {
 	local path=$1
 
@@ -55,18 +18,50 @@ expand_dir_path()
 }
 
 
-expand_path()
+#
+# Module public
+
+printf-message()
+{
+	printf "$@"
+	printf '\n'
+}
+
+
+printf-stderr()
+{
+	printf "$@" >&2
+}
+
+
+printf-vdev-error()
+{
+	local script_name="vdev-$(basename $0)"
+
+	if has-terminal
+	then
+		printf-stderr "$RED_TEXT"'%s error:'"$NEUTRAL_TEXT"' ' "$script_name"
+	else
+		printf-stderr '%s error: ' "$script_name"
+	fi
+
+	printf-stderr "$@"
+	printf-stderr '\n\n'
+}
+
+
+expand-path()
 {
 	local path=$1
 
 	local dir=$(dirname "$path")
 	local base_name=$(basename "$path")
-	local absolute_dir_path=$(expand_dir_path "$dir")
+	local absolute_dir_path=$(expand-dir-path "$dir")
 	printf '%s\n' "$absolute_dir_path/$base_name"
 }
 
 
-dos2unix_path()
+dos2unix-path()
 {
 	local dos_path=$1
 
@@ -74,13 +69,13 @@ dos2unix_path()
 }
 
 
-trim_eoln()
+trim-eoln()
 {
 	sed -e $'s/\r$//g'
 }
 
 
-escape_backslashes()
+escape-backslashes()
 {
 	local dos_path=$1
 
@@ -97,25 +92,7 @@ unquote()
 }
 
 
-make_solution_cache_name()
-{
-	local path=$1
-
-	sed 's/\//\./g' <<< "$path"
-}
-
-
-make_solution_cache_path()
-{
-	local solution_path=$1
-	local out_dir=$2
-
-	local solution_cache_dir=$(make_solution_cache_name "$solution_path")
-	printf '%s\n' "$out_dir/$solution_cache_dir"
-}
-
-
-check_dir()
+check-dir()
 {
 	local path=$1
 
