@@ -1,60 +1,72 @@
 # virtual-dev
 
-This project allows developing for Windows with native development tools in OS X environment.
-Those who develop crosspalform projects might cosider this tool, as it minimizes switching between development environments.
-
-Requires VirtualBox with guest additions, installed Windows and Visual Studio.
+Provides MSBuild to OS X through VirtualBox, thus helps make crossplatform development easier by minimizing switching between development environments.
 
 
 
 # Usage
 
 ```bash
-$ git clone https://github.com/shrpnsld/virtual-dev/ # Can be cloned anywhere
-$ cd Project/Root/
-$ Path/To/virtual-dev/init VMName Username password123 # Set up
-$ Path/To/virtual-dev/build Path/To/Solution.sln Project Debug # Build project
-$ Path/To/virtual-dev/run Path/To/Solution.sln Project Debug # Run project
+$ # Get it
+$ git clone https://github.com/shrpnsld/virtual-dev/
+$
+$ # Add aliases for commands to "~/.profile".
+$ # Otherwise use "Path/To/virtual-dev/<command>" instead of "vdev-<command>"
+$ Path/To/virtual-dev/stuff/add-aliases
+```
+```bash
+$ # Use it
+$ cd /Project/Root/
+$
+$ # Virtual machine should be turned off
+$ vdev-init GuestMachineName Username password123 # Initialize workspace
+$
+$ # Virtual machine should be turned on
+$ vdev-msbuild Path/To/Project.vcxproj /t:Build /p:configuration=Debug # Build
+$ vdev-run-vcxproj Path/To/Project.vcxproj /p:configuration=Debug # Run
 ```
 
-`init` will create shared folder in the virtual machine (using the solution name and `Project/Root/`), start the virtual machine and wait for user to login, then it will get and generate all configuration it needs.
+All project-related files should be inside `Project/Root/`, so they can be accessible on guest machine.
+
+virtual-dev workspace files are stored in `/Project/Root/.vdev/` folder.
+
+
+### Requires
+
+* Host macOS or OS X *(may also work with host Linux)*
+* bash 3.2 or later
+* VirtualBox 5.x
+* Guest Windows 7 or later with guest additions
+* Visual Studio 10 or later
 
 
 
 # Using with Xcode
 
-Projects in the Visual Studio solution correspond to Xcode targets. Thus to build specific Visual Studio project an external build system target should be set up in the Xcode project.
 
-This target should have following settings:
+### Build
 
-* Build Tool: `/Absolute/Path/To/virtual-dev/build`
-* Arguments: `Path/To/Solution.sln` `Project` `$(CONFIGURATION)`
+Add **External Build System** target and use following settings for it:
+
+* Build Tool: `/Absolute/Path/To/virtual-dev/msbuild`
+* Arguments: `arguments` `to` `vdev-msbuild`
 * Directory: `/Absolute/Project/Root/`
 
 ![](./doc/ExternalBuildToolConfiguration.png)
 
-To run target it's scheme should have following settings:
+### Run
 
-* Executable: `/Absolute/Path/To/virtual-dev/run`
-* Option 'Debug executable' should be turned off
+Edit target scheme using following settings:
+
+* Executable: `/Absolute/Path/To/virtual-dev/msbuild`
+* **Debug executable** option should be turned off
 
 ![](./doc/SchemeRunInfo.png)
 
-* Arguments: `/Absolute/Path/To/virtual-dev/`, `$(TARGETNAME)` and `$(CONFIGURATION)`
+* Arguments: `arguments` `to` `vdev-run-vcxproj`
 
 ![](./doc/SchemeRunArguments.png)
 
 * Working Directory: `/Absolute/Project/Root/`
 
 ![](./doc/SchemeRunOptions.png)
-
-
-
-# Notes
-
-* All project-related files (.sln, .vcxproj, sources) and 'OutDir' variable path should be inside `Project/Root/`, so it be accessible from guest machine, as `Project/Root/` is mounted as shared folder.
-
-* virtual-dev reads .sln file and .vcxproj files, creates temporary files in solution folder to get information it needs for build/run. This process doesn't affect any files virtual-dev doesn't own; all the temporary files are deleted before the script exit.
-
-* If solution or project files change, scripts will regenerate all infomation they require.
-
