@@ -99,6 +99,39 @@ msbuild-arguments-from-parameters()
 }
 
 
+next-properties-file-name()
+{
+	local properties_dir=$1
+
+	local file_name=$(ls -1 "$properties_dir" | tail -n 1)
+	if [ -z "$file_name" ]
+	then
+		printf '%s\n' '1'
+		return
+	fi
+
+	((++file_name))
+	printf '%s\n' "$file_name"
+}
+
+
+find-vcxproj-properties-file()
+{
+	local properties_dir=$1
+	local header=$2
+
+	local properties_files=($(grep --line-regexp --fixed-strings --recursive --files-with-matches --no-messages "#$header" "$properties_dir"))
+	if [ "${#properties_files[@]}" == 0 ]
+	then
+		file_name=$(next-properties-file-name "$properties_dir")
+		printf '%s\n' "$properties_dir/$file_name"
+		return
+	fi
+
+	printf '%s\n' "${properties_files[0]}"
+}
+
+
 #
 # Main
 
@@ -152,33 +185,52 @@ fi
 project_path=$(project-path-from-parameters "$@")
 msbuild_arguments=($(msbuild-arguments-from-parameters "$@"))
 
-out_dir=$(detail/project-property "$vs_version" "$project_path" 'OutDir' "${msbuild_arguments[@]}")
+properties_dir="$vdev_dir/$VCXPROJ_PROPS_FILE"
+mkdir -p "$properties_dir"
 if [ $? != 0 ]
 then
-	printf-vdev-error 'failed to get project "OutDir" property'
+	printf_vdev_error 'failed to create cache folder "%s"' "$properties_dir"
 	exit 1
 fi
 
-out_dir=$(escape-backslashes "$out_dir")
-
-name=$(detail/project-property "$vs_version" "$project_path" 'TargetName' "${msbuild_arguments[@]}")
-if [ $? != 0 ]
+header="$project_path ${msbuild_arguments[@]}"
+properties_file_path=$(find-vcxproj-properties-file "$properties_dir" "$header")
+if [ "$properties_file_path" -ot "$working_dir/$project_path" ]
 then
-	printf-vdev-error 'failed to get project "TargetName" property'
-	exit 1
+	OutDir=$(detail/project-property "$vs_version" "$project_path" 'OutDir' "${msbuild_arguments[@]}")
+	if [ $? != 0 ]
+	then
+		printf-vdev-error 'failed to get project property "OutDir"'
+		exit 1
+	fi
+
+	OutDir=$(escape-backslashes "$OutDir")
+
+	TargetName=$(detail/project-property "$vs_version" "$project_path" 'TargetName' "${msbuild_arguments[@]}")
+	if [ $? != 0 ]
+	then
+		printf-vdev-error 'failed to get project property "TargetName"'
+		exit 1
+	fi
+
+	TargetExt=$(detail/project-property "$vs_version" "$project_path" 'TargetExt' "${msbuild_arguments[@]}")
+	if [ $? != 0 ]
+	then
+		printf-vdev-error 'failed to get project property "TargetExt"'
+		exit 1
+	fi
+
+	dictionary-with-header "$properties_file_path" "$header"
+	dictionary-save "$properties_file_path" 'OutDir' 'TargetName' 'TargetExt'
 fi
 
-extension=$(detail/project-property "$vs_version" "$project_path" 'TargetExt' "${msbuild_arguments[@]}")
-if [ $? != 0 ]
-then
-	printf-vdev-error 'failed to get project "TargetExt" property'
-	exit 1
-fi
+dictionary-load "$properties_file_path" 'OutDir' 'TargetName' 'TargetExt'
+
 
 project_dir=$(dirname $project_path)
 guest_project_dir="$guest_root_dir\\$project_dir"
-binary_name="$name$extension"
-detail/"$vm"/execute "$guest_run_bat" "$guest_project_dir" "$out_dir" "$binary_name"
+binary_name="$TargetName$TargetExt"
+detail/"$vm"/execute "$guest_run_bat" "$guest_project_dir" "$OutDir" "$binary_name"
 retval=$?
 printf '\n' # if put newline in Windows then it can be swallowed ???
 

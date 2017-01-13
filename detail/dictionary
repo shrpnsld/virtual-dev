@@ -1,3 +1,12 @@
+dictionary-with-header()
+{
+	local array=$1
+	local header=$2
+
+	printf '%s\n' "#$header" > "$array"
+}
+
+
 dictionary-find()
 {
 	local array=$1
@@ -30,6 +39,18 @@ dictionary-insert()
 	fi
 
 	printf '%s=%s\n' "$key" "$value" >> "$array"
+}
+
+
+dictionary-save()
+{
+	local conf_path=$1
+	local variables=("${@:2}")
+
+	for variable in ${variables[@]}
+	do
+		dictionary-insert "$conf_path" "$variable" "${!variable}"
+	done
 }
 
 
