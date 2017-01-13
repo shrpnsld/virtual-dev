@@ -30,7 +30,7 @@ Options:
     <MSBuild-arguments>        Arguments for MSBuild.
 
 Notes:
-    "Paths/To/Some.thing" should be relative.
+    "Paths/To/Some.thing" should be relative to project root.
 
     Form (1) passes it'"'"'s first argument to MSBuild.
 '
@@ -175,12 +175,17 @@ detail/check-paths-file "$vdev_guest_paths_file"
 dictionary-load "$vdev_guest_paths_file" 'guest_root_dir' 'guest_msbuild_bat'
 
 
+# MVS version
+
 vs_version=$(vs-version-for-parameters "$@")
 if [ $? != 0 ]
 then
 	printf-vdev-error 'failed to detect Visual Studio version. Specify it explicitly'
 	exit 1
 fi
+
+
+# Project properties
 
 project_path=$(project-path-from-parameters "$@")
 msbuild_arguments=($(msbuild-arguments-from-parameters "$@"))
@@ -226,6 +231,8 @@ fi
 
 dictionary-load "$properties_file_path" 'OutDir' 'TargetName' 'TargetExt'
 
+
+# Runnig
 
 project_dir=$(dirname $project_path)
 guest_project_dir="$guest_root_dir\\$project_dir"
