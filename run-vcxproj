@@ -150,9 +150,10 @@ then
 	exit 1
 fi
 
-if ! detail/"$vm"/is-running "$guest_name"
+detail/"$vm"/check-vm-started
+if [ $? != 0 ]
 then
-	printf-vdev-error '"%s" is not running' "$guest_name"
+	printf-vdev-error 'failed to start "%s"' "$guest_name"
 	exit 1
 fi
 

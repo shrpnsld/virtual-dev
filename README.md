@@ -11,17 +11,13 @@ $ # Get it
 $ git clone https://github.com/shrpnsld/virtual-dev/
 $
 $ # Add aliases for commands to "~/.profile".
-$ # Otherwise use "Path/To/virtual-dev/<command>" instead of "vdev-<command>"
 $ Path/To/virtual-dev/stuff/add-aliases
+$ # Otherwise use "Path/To/virtual-dev/<command>" instead of "vdev-<command>"
 ```
 ```bash
 $ # Use it
 $ cd /Project/Root/
-$
-$ # Virtual machine should be turned off
 $ vdev-init GuestMachineName Username password123 # Initialize workspace
-$
-$ # Virtual machine should be turned on
 $ vdev-msbuild Path/To/Project.vcxproj /t:Build /p:configuration=Debug # Build
 $ vdev-run-vcxproj Path/To/Project.vcxproj /p:configuration=Debug # Run
 ```
