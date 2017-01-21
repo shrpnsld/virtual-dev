@@ -142,6 +142,16 @@ vdev_guest_paths_file="$vdev_dir/$GUEST_PATHS_FILE"
 dictionary-load "$vdev_guest_paths_file" 'guest_root_dir' 'guest_run_bat'
 
 
+# Parameters
+
+if [ $# \< 1 ]
+then
+	printf-vdev-error 'wrong number of arguments'
+	printf-message '%s' "$HELP_MESSAGE"
+	exit 1
+fi
+
+
 # Checks
 
 if ! detail/"$vm"/vm-exists "$guest_name"
@@ -154,16 +164,6 @@ detail/"$vm"/check-vm-started
 if [ $? != 0 ]
 then
 	printf-vdev-error 'failed to start "%s"' "$guest_name"
-	exit 1
-fi
-
-
-# Parameters
-
-if [ $# \< 1 ]
-then
-	printf-vdev-error 'wrong number of arguments'
-	printf-message '%s' "$HELP_MESSAGE"
 	exit 1
 fi
 
