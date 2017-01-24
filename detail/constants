@@ -3,5 +3,6 @@ GUEST_PATHS_FILE=guest_paths
 VCXPROJ_PROPS_FILE=vcxproj_props
 
 RED_TEXT='\e[0;31m'
+YELLOW_TEXT='\e[0;33m'
 NEUTRAL_TEXT='\e[0m'
 

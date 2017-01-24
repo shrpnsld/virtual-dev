@@ -50,6 +50,22 @@ printf-vdev-error()
 }
 
 
+printf-vdev-warning()
+{
+	local script_name="vdev-$(basename $0)"
+
+	if has-terminal
+	then
+		printf-stderr "$YELLOW_TEXT"'%s warning:'"$NEUTRAL_TEXT"' ' "$script_name"
+	else
+		printf-stderr '%s warning: ' "$script_name"
+	fi
+
+	printf-stderr "$@"
+	printf-stderr '\n\n'
+}
+
+
 expand-path()
 {
 	local path=$1
