@@ -25,3 +25,5 @@ dictionary-insert "$paths_file" 'guest_root_dir' "$found_disk"
 dictionary-insert "$paths_file" 'guest_msbuild_bat' "$guest_vdev_guest_dir/msbuild.bat"
 dictionary-insert "$paths_file" 'guest_run_bat' "$guest_vdev_guest_dir/run.bat"
 
+exit 2
+

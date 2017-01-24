@@ -129,6 +129,12 @@ fi
 vdev_guest_paths_file="$vdev_dir/$GUEST_PATHS_FILE"
 
 detail/check-paths-file "$vdev_guest_paths_file"
+if [ $? == 2 ]
+then
+	printf-vdev-warning 'shared disk on "%s" for this project was changed. This may cause error during compilation. You may need to check paths in the solution.' "$guest_name"
+fi
+
+
 dictionary-load "$vdev_guest_paths_file" 'guest_root_dir' 'guest_msbuild_bat'
 
 

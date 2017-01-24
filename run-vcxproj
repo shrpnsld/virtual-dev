@@ -132,14 +132,53 @@ find-vcxproj-properties-file()
 }
 
 
+check-vcxproj-properties()
+{
+	local vs_version=$1
+	local project_path=$2
+	local properties_dir=$3
+	local msbuild_arguments=("${@:4}")
+
+	local header="$project_path ${msbuild_arguments[@]}"
+	local properties_file_path=$(find-vcxproj-properties-file "$properties_dir" "$header")
+	if [ ! "$working_dir/$project_path" -nt "$properties_file_path" ]
+	then
+		printf '%s\n' "$properties_file_path"
+		return
+	fi
+
+	local OutDir=$(detail/project-property "$vs_version" "$project_path" 'OutDir' "${msbuild_arguments[@]}")
+	if [ $? != 0 ]
+	then
+		return 1
+	fi
+
+	OutDir=$(escape-backslashes "$OutDir")
+
+	local TargetName=$(detail/project-property "$vs_version" "$project_path" 'TargetName' "${msbuild_arguments[@]}")
+	if [ $? != 0 ]
+	then
+		return 1
+	fi
+
+	local TargetExt=$(detail/project-property "$vs_version" "$project_path" 'TargetExt' "${msbuild_arguments[@]}")
+	if [ $? != 0 ]
+	then
+		return 1
+	fi
+
+	dictionary-with-header "$properties_file_path" "$header"
+	dictionary-save "$properties_file_path" 'OutDir' 'TargetName' 'TargetExt'
+
+	printf '%s\n' "$properties_file_path"
+}
+
+
 #
 # Main
 
 vdev_vm_file="$vdev_dir/$VM_FILE"
 dictionary-load "$vdev_vm_file" 'vm' 'guest_name'
-
-vdev_guest_paths_file="$vdev_dir/$GUEST_PATHS_FILE"
-dictionary-load "$vdev_guest_paths_file" 'guest_root_dir' 'guest_run_bat'
 
 
 # Parameters
@@ -173,7 +212,13 @@ fi
 vdev_guest_paths_file="$vdev_dir/$GUEST_PATHS_FILE"
 
 detail/check-paths-file "$vdev_guest_paths_file"
-dictionary-load "$vdev_guest_paths_file" 'guest_root_dir' 'guest_msbuild_bat'
+if [ $? == 2 ]
+then
+	printf-vdev-warning 'shared disk on "%s" for this project was changed. This may cause an error on running project. You may need to check paths in the solution.' "$guest_name"
+fi
+
+
+dictionary-load "$vdev_guest_paths_file" 'guest_root_dir' 'guest_msbuild_bat' 'guest_run_bat'
 
 
 # MVS version
@@ -199,35 +244,11 @@ then
 	exit 1
 fi
 
-header="$project_path ${msbuild_arguments[@]}"
-properties_file_path=$(find-vcxproj-properties-file "$properties_dir" "$header")
-if [ "$properties_file_path" -ot "$working_dir/$project_path" ]
+properties_file_path=$(check-vcxproj-properties "$vs_version" "$project_path" "$properties_dir" "${msbuild_arguments[@]}")
+if [ $? != 0 ]
 then
-	OutDir=$(detail/project-property "$vs_version" "$project_path" 'OutDir' "${msbuild_arguments[@]}")
-	if [ $? != 0 ]
-	then
-		printf-vdev-error 'failed to get project property "OutDir"'
-		exit 1
-	fi
-
-	OutDir=$(escape-backslashes "$OutDir")
-
-	TargetName=$(detail/project-property "$vs_version" "$project_path" 'TargetName' "${msbuild_arguments[@]}")
-	if [ $? != 0 ]
-	then
-		printf-vdev-error 'failed to get project property "TargetName"'
-		exit 1
-	fi
-
-	TargetExt=$(detail/project-property "$vs_version" "$project_path" 'TargetExt' "${msbuild_arguments[@]}")
-	if [ $? != 0 ]
-	then
-		printf-vdev-error 'failed to get project property "TargetExt"'
-		exit 1
-	fi
-
-	dictionary-with-header "$properties_file_path" "$header"
-	dictionary-save "$properties_file_path" 'OutDir' 'TargetName' 'TargetExt'
+	printf-vdev-error 'failed to get project properties'
+	exit 1
 fi
 
 dictionary-load "$properties_file_path" 'OutDir' 'TargetName' 'TargetExt'
