@@ -35,12 +35,18 @@ sed '/<Project .*>/a\
 trap "rm -f \"$working_project_path\"" EXIT
 
 export virtual_dev_arguments="$guest_root_dir/$working_project_path ${msbuild_arguments[@]} /target:VDevGetProperty"
-output=$(detail/"$vm"/execute "$guest_msbuild_bat" "$guest_root_dir" "$vs_version" | trim-eoln) || exit
+output=$(detail/"$vm"/execute "$guest_msbuild_bat" "$guest_root_dir" "$vs_version" | trim-eoln)
+retval=${PIPESTATUS[0]}
+if [ $retval != 0 ]
+then
+	exit 1
+fi
+
 line=$(grep "$property_line" <<< "$output")
 property_value=${line#*$property_line}
 if [ -z $property_value ]
 then
-	exit 1
+	exit 2
 fi
 
 printf '%s\n' $property_value
