@@ -12,7 +12,8 @@ dictionary-find()
 	local array=$1
 	local key=$2
 
-	local record=$(grep --no-messages "^$key=" "$array")
+	local record
+	record=$(grep --no-messages "^$key=" "$array")
 	retval=$?
 	if [ $retval != 0 ]
 	then

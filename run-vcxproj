@@ -147,7 +147,8 @@ check-vcxproj-properties()
 		return
 	fi
 
-	local OutDir=$(detail/project-property "$vs_version" "$project_path" 'OutDir' "${msbuild_arguments[@]}")
+	local OutDir
+	OutDir=$(detail/project-property "$vs_version" "$project_path" 'OutDir' "${msbuild_arguments[@]}")
 	if [ $? != 0 ]
 	then
 		return 1
@@ -155,13 +156,15 @@ check-vcxproj-properties()
 
 	OutDir=$(escape-backslashes "$OutDir")
 
-	local TargetName=$(detail/project-property "$vs_version" "$project_path" 'TargetName' "${msbuild_arguments[@]}")
+	local TargetName
+	TargetName=$(detail/project-property "$vs_version" "$project_path" 'TargetName' "${msbuild_arguments[@]}")
 	if [ $? != 0 ]
 	then
 		return 1
 	fi
 
-	local TargetExt=$(detail/project-property "$vs_version" "$project_path" 'TargetExt' "${msbuild_arguments[@]}")
+	local TargetExt
+	TargetExt=$(detail/project-property "$vs_version" "$project_path" 'TargetExt' "${msbuild_arguments[@]}")
 	if [ $? != 0 ]
 	then
 		return 1
