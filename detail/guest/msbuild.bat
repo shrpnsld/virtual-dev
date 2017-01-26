@@ -20,5 +20,5 @@ set vcvarsall="!%vs_comntools_path%!\..\..\VC\vcvarsall.bat"
 
 call %vcvarsall% || exit 1
 
-msbuild %virtual_dev_arguments%
+msbuild %VIRTUAL_DEV_ARGUMENTS%
 

@@ -1,18 +1,18 @@
 #!/bin/bash
 
-export working_dir=$(pwd)
+export VIRTUAL_DEV_WORKING_DIR=$(pwd)
 cd $(dirname $0)
-export vdev_dir="$working_dir/.vdev"
-
 
 source detail/constants
 source detail/utils
 source detail/dictionary
 
 
-if [ ! -d "$vdev_dir" ]
+export VIRTUAL_DEV_WORKSPACE_DIR="$VIRTUAL_DEV_WORKING_DIR/$VIRTUAL_DEV_WORKSPACE_NAME"
+
+if [ ! -d "$VIRTUAL_DEV_WORKSPACE_DIR" ]
 then
-	printf-vdev-error 'current path doesn'"'"'t have any virtual-dev configuration'
+	printf-vdev-error 'current path doesn'"'"'t have any virtual-dev workspace'
 	exit 1
 fi
 
@@ -22,15 +22,15 @@ HELP_MESSAGE=\
     vdev-msbuild [<MSBuild-arguments>...]                (1)
     vdev-msbuild <MVS-version> [<MSBuild-arguments>...]  (2)
 
-Options:
-    <MVS-version>              Specify Visual Studio version explicitly.
+Parameters:
     <MSBuild-arguments>        Arguments for MSBuild.
+    <MVS-version>              Specify Visual Studio version (not year) explicitly.
 
 Notes:
-    Solution or project paths should be relative to project root.
-
-    Form (1) should have .sln or .vcxproj in it'"'"'s arguments.
+    Form (1) should have .sln or .vcxproj file path in it'"'"'s arguments.
     Form (2) does not pass <MVS-version> to MSBuild.
+
+    Solution or project paths should be relative to project root.
 '
 
 
@@ -41,7 +41,34 @@ vs_version=$1
 
 
 #
-# Funtions
+# Functions
+
+validate-parameters()
+{
+	local parameters=("$@")
+
+	array-search-by-pattern '.*\.sln' "${parameters[@]}" > /dev/null
+	if [ $? == 0 ]
+	then
+		return
+	fi
+
+	array-search-by-pattern '.*\.vcxproj' "${parameters[@]}" > /dev/null
+	if [ $? == 0 ]
+	then
+		return
+	fi
+
+	local first_parameter=${parameters[@]}
+	if [[ $first_parameter =~ ^[0-9]+$ ]]
+	then
+		printf '%s\n' "$first_parameter"
+		return
+	fi
+
+	return 1
+}
+
 
 vs-version-for-parameters()
 {
@@ -58,7 +85,7 @@ vs-version-for-parameters()
 	project_path=$(array-search-by-pattern '.*\.vcxproj' "${parameters[@]}")
 	if [ $? == 0 ]
 	then
-		local absolute_solution_path=$(detail/detect-solution-for-project "$project_path")
+		local absolute_solution_path=$(detail/find-solution-for-vcxproj "$project_path")
 	fi
 
 	if [ -z "$absolute_solution_path" ]
@@ -70,7 +97,7 @@ vs-version-for-parameters()
 			return 1
 		fi
 
-		local absolute_solution_path="$working_dir/$solution_path"
+		local absolute_solution_path="$VIRTUAL_DEV_WORKING_DIR/$solution_path"
 	fi
 
 	if [ ! -r "$absolute_solution_path" ]
@@ -102,7 +129,7 @@ msbuild-arguments-from-parameters()
 #
 # Main
 
-vdev_vm_file="$vdev_dir/$VM_FILE"
+vdev_vm_file="$VIRTUAL_DEV_WORKSPACE_DIR/$VM_FILE"
 dictionary-load "$vdev_vm_file" 'vm' 'guest_name'
 
 
@@ -111,6 +138,13 @@ dictionary-load "$vdev_vm_file" 'vm' 'guest_name'
 if [ $# \< 1 ]
 then
 	printf-vdev-error 'too few arguments'
+	printf-message '%s' "$HELP_MESSAGE"
+	exit 1
+fi
+
+if ! validate-parameters "$@"
+then
+	printf-vdev-error 'bad arguments'
 	printf-message '%s' "$HELP_MESSAGE"
 	exit 1
 fi
@@ -134,12 +168,12 @@ fi
 
 # Paths file
 
-vdev_guest_paths_file="$vdev_dir/$GUEST_PATHS_FILE"
+vdev_guest_paths_file="$VIRTUAL_DEV_WORKSPACE_DIR/$GUEST_PATHS_FILE"
 
 detail/check-paths-file "$vdev_guest_paths_file"
 if [ $? == 2 ]
 then
-	printf-vdev-warning 'shared disk on "%s" for this project was changed. This may cause error during compilation. You may need to check paths in the solution.' "$guest_name"
+	printf-vdev-warning 'shared disk on "%s" for this workspace was changed. This may cause error during compilation. You may need to check paths in the solution.' "$guest_name"
 fi
 
 dictionary-load "$vdev_guest_paths_file" 'guest_root_dir' 'guest_msbuild_bat'
@@ -157,7 +191,7 @@ fi
 msbuild_arguments=($(msbuild-arguments-from-parameters "$@"))
 
 # passing arguments through environment variable, because "cmd.exe" will remove "=" character from arguments like "/property:configuration=Release"
-export virtual_dev_arguments="${msbuild_arguments[@]}"
+export VIRTUAL_DEV_ARGUMENTS="${msbuild_arguments[@]}"
 detail/"$vm"/execute "$guest_msbuild_bat" "$guest_root_dir" "$vs_version" | detail/error-format-mvs-to-gcc
 retval=${PIPESTATUS[0]}
 if [ $retval == 1 ]

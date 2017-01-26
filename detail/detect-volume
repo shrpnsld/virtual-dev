@@ -14,7 +14,7 @@ id_dir=$1
 #
 # Main
 
-vdev_vm_file="$vdev_dir/$VM_FILE"
+vdev_vm_file="$VIRTUAL_DEV_WORKSPACE_DIR/$VM_FILE"
 dictionary-load "$vdev_vm_file" 'vm'
 
 # waiting for the service to be available

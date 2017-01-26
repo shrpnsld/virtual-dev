@@ -1,7 +1,10 @@
-source detail/constants
-
 #
 # Module private
+
+RED_TEXT='\e[0;31m'
+YELLOW_TEXT='\e[0;33m'
+NEUTRAL_TEXT='\e[0m'
+
 
 has-terminal()
 {
@@ -21,6 +24,8 @@ expand-dir-path()
 #
 # Module public
 
+# Output
+
 printf-message()
 {
 	printf "$@"
@@ -31,6 +36,22 @@ printf-message()
 printf-stderr()
 {
 	printf "$@" >&2
+}
+
+
+printf-vdev-warning()
+{
+	local script_name="vdev-$(basename $0)"
+
+	if has-terminal
+	then
+		printf-stderr "$YELLOW_TEXT"'%s warning:'"$NEUTRAL_TEXT"' ' "$script_name"
+	else
+		printf-stderr '%s warning: ' "$script_name"
+	fi
+
+	printf-stderr "$@"
+	printf-stderr '\n\n'
 }
 
 
@@ -50,21 +71,7 @@ printf-vdev-error()
 }
 
 
-printf-vdev-warning()
-{
-	local script_name="vdev-$(basename $0)"
-
-	if has-terminal
-	then
-		printf-stderr "$YELLOW_TEXT"'%s warning:'"$NEUTRAL_TEXT"' ' "$script_name"
-	else
-		printf-stderr '%s warning: ' "$script_name"
-	fi
-
-	printf-stderr "$@"
-	printf-stderr '\n\n'
-}
-
+# Paths
 
 expand-path()
 {
@@ -85,17 +92,19 @@ dos2unix-path()
 }
 
 
-trim-eoln()
-{
-	sed -e $'s/\r$//g'
-}
-
-
 escape-backslashes()
 {
 	local dos_path=$1
 
 	sed 's/\\/\\\\/g' <<< $dos_path
+}
+
+
+# Stuff
+
+trim-eoln()
+{
+	sed -e $'s/\r$//g'
 }
 
 
@@ -108,16 +117,23 @@ unquote()
 }
 
 
-check-dir()
+# Arrays
+
+array-has-value()
 {
-	local path=$1
+	local value=$1
+	local array=("${@:2}")
 
-	if [ -d "$path" ]
-	then
-		return
-	fi
+	local item
+	for item in "${array[@]}"
+	do
+		if [ "$item" == "$value" ]
+		then
+			return
+		fi
+	done
 
-	mkdir -p "$path"
+	return 1
 }
 
 

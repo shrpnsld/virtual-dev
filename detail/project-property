@@ -17,24 +17,24 @@ msbuild_arguments=(${@:4})
 #
 # Main
 
-vdev_vm_file="$vdev_dir/$VM_FILE"
+vdev_vm_file="$VIRTUAL_DEV_WORKSPACE_DIR/$VM_FILE"
 dictionary-load "$vdev_vm_file" 'vm'
 
-vdev_guest_paths_file="$vdev_dir/$GUEST_PATHS_FILE"
+vdev_guest_paths_file="$VIRTUAL_DEV_WORKSPACE_DIR/$GUEST_PATHS_FILE"
 dictionary-load "$vdev_guest_paths_file" 'guest_root_dir' 'guest_msbuild_bat'
 
 property_line='virtual-dev property:'
 
 working_project_path="${project_path%.*}.vdev"
-working_project_absolute_path="$working_dir/${project_path%.*}.vdev"
+working_project_absolute_path="$VIRTUAL_DEV_WORKING_DIR/${project_path%.*}.vdev"
 
 sed '/<Project .*>/a\
 <Target Name="VDevGetProperty"><Message Text="'"$property_line"'$('"$property"')"/></Target>
-' "$working_dir/$project_path" > "$working_project_absolute_path"
+' "$VIRTUAL_DEV_WORKING_DIR/$project_path" > "$working_project_absolute_path"
 
 trap "rm -f \"$working_project_path\"" EXIT
 
-export virtual_dev_arguments="$guest_root_dir/$working_project_path ${msbuild_arguments[@]} /target:VDevGetProperty"
+export VIRTUAL_DEV_ARGUMENTS="$guest_root_dir/$working_project_path ${msbuild_arguments[@]} /target:VDevGetProperty"
 output=$(detail/"$vm"/execute "$guest_msbuild_bat" "$guest_root_dir" "$vs_version" | trim-eoln)
 retval=${PIPESTATUS[0]}
 if [ $retval != 0 ]

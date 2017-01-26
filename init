@@ -1,9 +1,7 @@
 #!/bin/bash
 
-export working_dir=$(pwd)
+export VIRTUAL_DEV_WORKING_DIR=$(pwd)
 cd $(dirname $0)
-export vdev_dir="$working_dir/.vdev"
-
 
 source detail/constants
 source detail/utils
@@ -44,10 +42,12 @@ password=$3
 
 # Configuration
 
-rm -rf "$vdev_dir"
-mkdir "$vdev_dir"
+export VIRTUAL_DEV_WORKSPACE_DIR="$VIRTUAL_DEV_WORKING_DIR/$VIRTUAL_DEV_WORKSPACE_NAME"
 
-vdev_vm_file="$vdev_dir/$VM_FILE"
+rm -rf "$VIRTUAL_DEV_WORKSPACE_DIR"
+mkdir "$VIRTUAL_DEV_WORKSPACE_DIR"
+
+vdev_vm_file="$VIRTUAL_DEV_WORKSPACE_DIR/$VM_FILE"
 
 dictionary-insert "$vdev_vm_file" 'vm' "$vm"
 dictionary-insert "$vdev_vm_file" 'vm_manage' "$vm_manage"
@@ -57,7 +57,7 @@ dictionary-insert "$vdev_vm_file" 'password' "$password"
 
 dictionary-load "$vdev_vm_file" 'vm' 'guest_name'
 
-cp -Rn detail/guest "$vdev_dir/"
+cp -Rn "detail/$GUEST_DIR" "$VIRTUAL_DEV_WORKSPACE_DIR/"
 
 
 # Checks
@@ -79,7 +79,7 @@ fi
 
 # Shared folder
 
-project_root="$working_dir"
+project_root="$VIRTUAL_DEV_WORKING_DIR"
 
 project_name=$(basename "$project_root")
 

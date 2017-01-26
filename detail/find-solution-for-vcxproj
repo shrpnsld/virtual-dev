@@ -12,23 +12,6 @@ vcxproj_path=$1
 #
 # Functions
 
-is-value-in-array()
-{
-	local value=$1
-	local array=("${@:2}")
-
-	for current in "${array[@]}"
-	do
-		if [ "$current" == "$value" ]
-		then
-			return 0
-		fi
-	done
-
-	return 1
-}
-
-
 up()
 {
 	local path=$1
@@ -45,7 +28,7 @@ find-upward()
 
 	while true
 	do
-		if [ "$where" == "$working_dir" ]
+		if [ "$where" == "$VIRTUAL_DEV_WORKING_DIR" ]
 		then
 			break
 		fi
@@ -56,7 +39,7 @@ find-upward()
 			if $predicate "$solution_file"
 			then
 				printf '%s\n' "$solution_file"
-				return 0
+				return
 			fi
 		done
 
@@ -73,6 +56,8 @@ list-vcxproj-paths()
 
 	local solution_dir=$(dirname "$solution_file_path")
 	local vcxproj_paths=($(grep '^Project(' "$solution_file_path" | awk -F '" *, *"| = "' '{ print $3 }'))
+
+	local vcxproj_path
 	for vcxproj_path in "${vcxproj_paths[@]}"
 	do
 		expand-path "$solution_dir/$vcxproj_path"
@@ -87,14 +72,14 @@ solution-has-vcxproj()
 
 	local vcxproj_paths=($(list-vcxproj-paths "$solution_file_path"))
 
-	is-value-in-array "$vcxproj_file_path" "${vcxproj_paths[@]}"
+	array-has-value "$vcxproj_file_path" "${vcxproj_paths[@]}"
 }
 
 
 #
 # Main
 
-absolute_vcxproj_path="$working_dir/$vcxproj_path"
+absolute_vcxproj_path="$VIRTUAL_DEV_WORKING_DIR/$vcxproj_path"
 absolute_vcxproj_dir=$(dirname "$absolute_vcxproj_path")
 solution_file_path=$(find-upward "$absolute_vcxproj_dir" '*.sln' 'solution-has-vcxproj '"$absolute_vcxproj_path")
 if [ $? != 0 ]
