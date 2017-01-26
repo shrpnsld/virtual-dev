@@ -120,3 +120,22 @@ check-dir()
 	mkdir -p "$path"
 }
 
+
+array-search-by-pattern()
+{
+	local pattern=$1
+	local array=("${@:2}")
+
+	local item
+	for item in "${array[@]}"
+	do
+		if [[ $item =~ $pattern ]]
+		then
+			printf '%s\n' "$item"
+			return
+		fi
+	done
+
+	return 1
+}
+

@@ -19,20 +19,18 @@ fi
 
 HELP_MESSAGE=\
 'Usage:
-    vdev-msbuild <Path/To/Project.vcxproj> [<MSBuild-arguments>...]  (1)
-    vdev-msbuild <Path/To/Solution.sln> [<MSBuild-arguments>...]     (2)
-    vdev-msbuild <MVS-version> [<MSBuild-arguments>...]              (3)
+    vdev-msbuild [<MSBuild-arguments>...]                (1)
+    vdev-msbuild <MVS-version> [<MSBuild-arguments>...]  (2)
 
 Options:
-    <Path/To/Project.vcxproj>  Path to .vcxproj file; Visual Studio version will be detected by searching corresponding solution file.
-    <Path/To/Solution.sln>     Specify solution file to detect Visual Studio version from it.
     <MVS-version>              Specify Visual Studio version explicitly.
     <MSBuild-arguments>        Arguments for MSBuild.
 
 Notes:
-    "Paths/To/Some.thing" should be relative to project root.
+    Solution or project paths should be relative to project root.
 
-    Forms (1) and (2) pass their first argument to MSBuild.
+    Form (1) should have .sln or .vcxproj in it'"'"'s arguments.
+    Form (2) does not pass <MVS-version> to MSBuild.
 '
 
 
@@ -47,30 +45,40 @@ vs_version=$1
 
 vs-version-for-parameters()
 {
-	local first_parameter=$1
+	local parameters=("$@")
 
+	local first_parameter=${parameters[@]}
 	if [[ $first_parameter =~ ^[0-9]+$ ]]
 	then
 		printf '%s\n' "$first_parameter"
 		return
 	fi
 
-	if ! [[ $first_parameter =~ .*\.sln ]]
+	local project_path
+	project_path=$(array-search-by-pattern '.*\.vcxproj' "${parameters[@]}")
+	if [ $? == 0 ]
 	then
-		local solution_path=$(detail/detect-solution-for-project "$first_parameter")
+		local absolute_solution_path=$(detail/detect-solution-for-project "$project_path")
 	fi
 
-	if [ -z "$solution_path" ]
+	if [ -z "$absolute_solution_path" ]
 	then
-		local solution_path="$working_dir/$first_parameter"
+		local solution_path
+		solution_path=$(array-search-by-pattern '.*\.sln' "${parameters[@]}")
+		if [ $? != 0 ]
+		then
+			return 1
+		fi
+
+		local absolute_solution_path="$working_dir/$solution_path"
 	fi
 
-	if [ ! -r "$solution_path" ]
+	if [ ! -r "$absolute_solution_path" ]
 	then
 		return 1
 	fi
 
-	detail/vs-version "$solution_path"
+	detail/vs-version "$absolute_solution_path"
 	if [ $? != 0 ]
 	then
 		return 1
@@ -133,7 +141,6 @@ if [ $? == 2 ]
 then
 	printf-vdev-warning 'shared disk on "%s" for this project was changed. This may cause error during compilation. You may need to check paths in the solution.' "$guest_name"
 fi
-
 
 dictionary-load "$vdev_guest_paths_file" 'guest_root_dir' 'guest_msbuild_bat'
 
