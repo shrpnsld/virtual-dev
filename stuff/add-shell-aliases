@@ -7,7 +7,8 @@ config_string=\
 export VIRTUAL_DEV='"$virtual_dev_path"'\
 alias vdev-init="$VIRTUAL_DEV/init"\
 alias vdev-msbuild="$VIRTUAL_DEV/msbuild"\
-alias vdev-run-vcxproj="$VIRTUAL_DEV/run-vcxproj"'
+alias vdev-run-vcxproj="$VIRTUAL_DEV/run-vcxproj"
+alias vdev-execute="$VIRTUAL_DEV/execute"'
 
 
 config_file="${HOME}/.profile"

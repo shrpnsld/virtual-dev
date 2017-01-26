@@ -30,6 +30,7 @@ guest_vdev_guest_dir="$found_disk/$VIRTUAL_DEV_WORKSPACE_NAME/$GUEST_DIR"
 dictionary-insert "$paths_file" 'guest_root_dir' "$found_disk"
 dictionary-insert "$paths_file" 'guest_msbuild_bat' "$guest_vdev_guest_dir/msbuild.bat"
 dictionary-insert "$paths_file" 'guest_run_bat' "$guest_vdev_guest_dir/run.bat"
+dictionary-insert "$paths_file" 'guest_execute_bat' "$guest_vdev_guest_dir/execute.bat"
 
 if [ "$new_path_file" != true ]
 then

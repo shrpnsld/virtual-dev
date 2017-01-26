@@ -1,0 +1,74 @@
+#!/bin/bash
+
+export VIRTUAL_DEV_WORKING_DIR=$(pwd)
+cd $(dirname $0)
+
+source detail/constants
+source detail/utils
+source detail/dictionary
+
+
+export VIRTUAL_DEV_WORKSPACE_DIR="$VIRTUAL_DEV_WORKING_DIR/$VIRTUAL_DEV_WORKSPACE_NAME"
+
+if [ ! -d "$VIRTUAL_DEV_WORKSPACE_DIR" ]
+then
+	printf-vdev-error 'current path doesn'"'"'t have any virtual-dev workspace'
+	exit 1
+fi
+
+
+HELP_MESSAGE=\
+'Usage:
+    vdev-execute <working-dir> <executable> [<parameters>...]
+
+Parameters:
+    <working-dir>      Working directory for executable.
+    <executable>       Executable name or path.
+    <parameters>       Parameters for executable.
+'
+
+
+#
+# Parameters
+
+working_dir=$1
+binary_path=$2
+arguments=("${@:3}")
+
+
+#
+# Main
+
+vdev_vm_file="$VIRTUAL_DEV_WORKSPACE_DIR/$VM_FILE"
+dictionary-load "$vdev_vm_file" 'vm' 'guest_name'
+
+
+# Checks
+
+if [ $# \< 2 ]
+then
+	printf-vdev-error 'bad arguments'
+	printf-message '%s' "$HELP_MESSAGE"
+	exit 1
+fi
+
+
+# Paths file
+
+vdev_guest_paths_file="$VIRTUAL_DEV_WORKSPACE_DIR/$GUEST_PATHS_FILE"
+
+detail/check-paths-file "$vdev_guest_paths_file"
+if [ $? == 2 ]
+then
+	printf-vdev-warning 'shared disk on "%s" for this workspace was changed.' "$guest_name"
+fi
+
+dictionary-load "$vdev_guest_paths_file" 'guest_root_dir' 'guest_execute_bat'
+
+
+# Execution
+
+# passing arguments through environment variable, because some commands may remove characters like "=" from arguments like "/property:configuration=Release"
+export VIRTUAL_DEV_ARGUMENTS="${arguments[@]}"
+detail/"$vm"/execute "$guest_execute_bat" "$working_dir" "$binary_path"
+
