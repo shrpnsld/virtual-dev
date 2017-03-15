@@ -81,3 +81,5 @@ virtual-dev converts Microsoft Visual Studio errors to GCC error format, thus Xc
 # Notes
 
 Adding or removing shared folder for virtual machine may change disk letter for other shared folders on that machine. This happens because  mounting order does not depend to adding/removing order. virtual-dev will detect disk change for workspace and show appropriate warning message, but only once.
+
+virtual-dev catches `SIGINT` and kills process**es** that have same name with the one that was started by script. *(It's hard to detect the exact process that was started by script, but in most cases current implementation will not cause issues, as process name would be unique, so no other processes will be killed)*

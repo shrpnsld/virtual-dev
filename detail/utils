@@ -39,6 +39,14 @@ printf-stderr()
 }
 
 
+printf-vdev-message()
+{
+	printf 'virtual-dev: '
+	printf "$@"
+	printf '\n'
+}
+
+
 printf-vdev-warning()
 {
 	local script_name="vdev-$(basename $0)"
@@ -50,8 +58,8 @@ printf-vdev-warning()
 		printf-stderr '%s warning: ' "$script_name"
 	fi
 
-	printf-stderr "$@"
-	printf-stderr '\n\n'
+	printf-message "$@"
+	printf-message '\n\n'
 }
 
 

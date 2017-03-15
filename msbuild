@@ -188,6 +188,8 @@ then
 	exit 1
 fi
 
+trap 'detail/terminate MSBuild.exe' INT
+
 msbuild_arguments=($(msbuild-arguments-from-parameters "$@"))
 
 # passing arguments through environment variable, because "cmd.exe" will remove "=" character from arguments like "/property:configuration=Release"

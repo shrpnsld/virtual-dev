@@ -303,6 +303,9 @@ dictionary-load "$properties_file_path" 'OutDir' 'TargetName' 'TargetExt'
 project_dir=$(dirname $project_path)
 guest_project_dir="$guest_root_dir\\$project_dir"
 binary_name="$TargetName$TargetExt"
+
+trap "detail/terminate $binary_name" INT
+
 detail/"$vm"/execute "$guest_run_bat" "$guest_project_dir" "$OutDir" "$binary_name"
 retval=$?
 printf '\n' # if put newline in Windows then it can be swallowed ???

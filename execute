@@ -68,6 +68,8 @@ dictionary-load "$vdev_guest_paths_file" 'guest_root_dir' 'guest_execute_bat'
 
 # Execution
 
+trap "detail/terminate $binary_name" INT
+
 # passing arguments through environment variable, because some commands may remove characters like "=" from arguments like "/property:configuration=Release"
 export VIRTUAL_DEV_ARGUMENTS="${arguments[@]}"
 detail/"$vm"/execute "$guest_execute_bat" "$working_dir" "$binary_path"
