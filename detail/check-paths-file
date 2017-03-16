@@ -25,7 +25,7 @@ then
 	exit
 fi
 
-guest_vdev_guest_dir="$found_disk/$VIRTUAL_DEV_WORKSPACE_NAME/$GUEST_DIR"
+guest_vdev_guest_dir="$found_disk/$VIRTUAL_DEV_WORKSPACE_NAME/$GUEST_SCRIPTS_DIR"
 
 dictionary-insert "$paths_file" 'guest_root_dir' "$found_disk"
 dictionary-insert "$paths_file" 'guest_msbuild_bat' "$guest_vdev_guest_dir/msbuild.bat"

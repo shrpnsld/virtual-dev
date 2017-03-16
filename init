@@ -57,7 +57,7 @@ dictionary-insert "$vdev_vm_file" 'password' "$password"
 
 dictionary-load "$vdev_vm_file" 'vm' 'guest_name'
 
-cp -Rn "detail/$GUEST_DIR" "$VIRTUAL_DEV_WORKSPACE_DIR/"
+cp -Rn "detail/$GUEST_SCRIPTS_DIR" "$VIRTUAL_DEV_WORKSPACE_DIR/"
 
 
 # Checks
