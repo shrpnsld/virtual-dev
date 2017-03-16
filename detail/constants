@@ -3,4 +3,5 @@ VIRTUAL_DEV_WORKSPACE_NAME='.vdev'
 GUEST_SCRIPTS_DIR=guest-scripts
 GUEST_PATHS_FILE=guest_paths
 VCXPROJ_PROPS_FILE=vcxproj_props
+VIRTUAL_DEV_WORKSPACE_ID_FILE=workspace-id
 

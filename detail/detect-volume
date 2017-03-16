@@ -8,7 +8,7 @@ source detail/dictionary
 #
 # Parameters
 
-id_dir=$1
+workspace_id_path=$1
 
 
 #
@@ -38,21 +38,18 @@ done
 
 
 # searching disk with current project
-
-id="vdevid$RANDOM"
-id_path="$id_dir/$id"
-touch "$id_path"
-trap "rm -f \"$id_path\"" EXIT
-
+check-workspace-id "$workspace_id_path"
+workspace_id=$(get-workspace-id "$workspace_id_path")
+workspace_id_relative_path="$VIRTUAL_DEV_WORKSPACE_NAME\\$VIRTUAL_DEV_WORKSPACE_ID_FILE"
 while read -r disk
 do
-	output=$(detail/"$vm"/execute 'cmd.exe' '/Q' '/C' "if exist $disk\\$id (echo 1) else (echo 0)" | trim-eoln) || exit 1
+	output=$(detail/"$vm"/execute 'cmd.exe' '/Q' '/C' 'type' "$disk\\$workspace_id_relative_path" 2>&1 | trim-eoln) || exit 1
 	if [ $? == 1 ]
 	then
 		exit 1
 	fi
 
-	if [ $output == '1' ]
+	if [ "$output" == "$workspace_id" ]
 	then
 		printf '%s\n' "$disk"
 		break

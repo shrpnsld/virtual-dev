@@ -163,3 +163,41 @@ array-search-by-pattern()
 	return 1
 }
 
+
+create-workspace-id()
+{
+	local workspace_id_path=$1
+
+	printf '%s\n' "$workspace_id_path" > "$workspace_id_path"
+}
+
+
+get-workspace-id()
+{
+	local workspace_id_path=$1
+
+	local output
+	output=$(cat "$workspace_id_path" 2>&1)
+	if [ $? != 0 ]
+	then
+		return 1
+	fi
+
+	printf '%s\n' "$output"
+}
+
+
+check-workspace-id()
+{
+	local workspace_id_path=$1
+
+	local workspace_id
+	workspace_id=$(cat "$workspace_id_path" 2>&1)
+	if [ $? == 0 ] && [ "$workspace_id" == "$workspace_id_path" ]
+	then
+		return
+	fi
+
+	create-workspace-id "$workspace_id_path"
+}
+
