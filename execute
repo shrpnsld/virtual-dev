@@ -48,7 +48,7 @@ dictionary-load "$vdev_vm_file" 'vm' 'guest_name'
 if [ $# \< 2 ]
 then
 	printf-vdev-error 'bad arguments'
-	printf-message '%s' "$HELP_MESSAGE"
+	printf '%s\n' "$HELP_MESSAGE"
 	exit 1
 fi
 

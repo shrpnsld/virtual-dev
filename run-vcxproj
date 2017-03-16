@@ -222,15 +222,15 @@ dictionary-load "$vdev_vm_file" 'vm' 'guest_name'
 
 if [ $# \< 1 ]
 then
-	printf-vdev-error 'wrong number of arguments'
-	printf-message '%s' "$HELP_MESSAGE"
+	printf-vdev-error 'too few arguments'
+	printf '%s\n' "$HELP_MESSAGE"
 	exit 1
 fi
 
 if ! validate-parameters "$@"
 then
 	printf-vdev-error 'bad arguments'
-	printf-message '%s' "$HELP_MESSAGE"
+	printf '%s\n' "$HELP_MESSAGE"
 	exit 1
 fi
 

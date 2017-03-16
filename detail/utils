@@ -26,13 +26,6 @@ expand-dir-path()
 
 # Output
 
-printf-message()
-{
-	printf "$@"
-	printf '\n'
-}
-
-
 printf-stderr()
 {
 	printf "$@" >&2
@@ -58,8 +51,8 @@ printf-vdev-warning()
 		printf-stderr '%s warning: ' "$script_name"
 	fi
 
-	printf-message "$@"
-	printf-message '\n\n'
+	printf-stderr "$@"
+	printf-stderr '\n\n'
 }
 
 

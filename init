@@ -28,7 +28,7 @@ HELP_MESSAGE=\
 if [ $# -ne 3 ]
 then
 	printf-vdev-error 'wrong number of arguments'
-	printf-message '%s' "$HELP_MESSAGE"
+	printf '%s\n' "$HELP_MESSAGE"
 	exit 1
 fi
 
