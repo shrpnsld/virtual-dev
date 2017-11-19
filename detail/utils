@@ -6,9 +6,9 @@ YELLOW_TEXT='\e[0;33m'
 NEUTRAL_TEXT='\e[0m'
 
 
-has-terminal()
+has-colors()
 {
-	tty -s
+	[ -t 1 ] && [ $(tput colors) \> 0 ]
 }
 
 
@@ -44,7 +44,7 @@ printf-vdev-warning()
 {
 	local script_name="vdev-$(basename $0)"
 
-	if has-terminal
+	if has-colors
 	then
 		printf-stderr "$YELLOW_TEXT"'%s warning:'"$NEUTRAL_TEXT"' ' "$script_name"
 	else
@@ -60,7 +60,7 @@ printf-vdev-error()
 {
 	local script_name="vdev-$(basename $0)"
 
-	if has-terminal
+	if has-colors
 	then
 		printf-stderr "$RED_TEXT"'%s error:'"$NEUTRAL_TEXT"' ' "$script_name"
 	else
