@@ -1,7 +1,7 @@
 #!/bin/bash
 
-source detail/constants
-source detail/dictionary
+source "$VIRTUAL_DEV"/detail/constants
+source "$VIRTUAL_DEV"/detail/dictionary
 
 
 #
@@ -10,7 +10,7 @@ source detail/dictionary
 dictionary-load "$VIRTUAL_DEV_WORKSPACE_DIR/$VM_FILE" 'vm' 'vm_manage' 'guest_name'
 
 
-if detail/"$vm"/is-running "$guest_name"
+if "$VIRTUAL_DEV"/detail/"$vm"/is-running "$guest_name"
 then
 	exit
 fi
@@ -24,7 +24,7 @@ fi
 
 while [ true ]
 do
-	detail/"$vm"/execute 'net.exe' 'accounts' &> /dev/null
+	"$VIRTUAL_DEV"/detail/"$vm"/execute 'net.exe' 'accounts' &> /dev/null
 	if [ $? == 0 ]
 	then
 		break

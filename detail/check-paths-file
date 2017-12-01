@@ -1,7 +1,7 @@
 #!/bin/bash
 
-source detail/constants
-source detail/dictionary
+source "$VIRTUAL_DEV"/detail/constants
+source "$VIRTUAL_DEV"/detail/dictionary
 
 
 #
@@ -18,7 +18,7 @@ then
 	new_path_file=true
 fi
 
-found_disk=$(detail/detect-volume "$VIRTUAL_DEV_WORKSPACE_DIR/$VIRTUAL_DEV_WORKSPACE_ID_FILE")
+found_disk=$("$VIRTUAL_DEV"/detail/detect-volume "$VIRTUAL_DEV_WORKSPACE_DIR/$VIRTUAL_DEV_WORKSPACE_ID_FILE")
 guest_root_dir=$(dictionary-find "$paths_file" 'guest_root_dir')
 if [ $? == 0 ] && [ "$found_disk" == "$guest_root_dir" ]
 then

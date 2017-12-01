@@ -1,11 +1,15 @@
 #!/bin/bash
 
-export VIRTUAL_DEV_WORKING_DIR=$(pwd)
-cd $(dirname $0)
+if [ -z "$VIRTUAL_DEV" ]
+then
+	export VIRTUAL_DEV=$(dirname $0)
+fi
 
-source detail/constants
-source detail/utils
-source detail/dictionary
+export VIRTUAL_DEV_WORKING_DIR=$PWD
+
+source "$VIRTUAL_DEV"/detail/constants
+source "$VIRTUAL_DEV"/detail/utils
+source "$VIRTUAL_DEV"/detail/dictionary
 
 
 # 'vm' configuration
@@ -58,20 +62,20 @@ dictionary-insert "$vdev_vm_file" 'password' "$password"
 
 dictionary-load "$vdev_vm_file" 'vm' 'guest_name'
 
-cp -Rn "detail/$GUEST_SCRIPTS_DIR" "$VIRTUAL_DEV_WORKSPACE_DIR/"
+cp -Rn "$VIRTUAL_DEV/detail/$GUEST_SCRIPTS_DIR" "$VIRTUAL_DEV_WORKSPACE_DIR/"
 
 
 # Checks
 
-vm_version=$(detail/"$vm"/version)
-if ! detail/check-vm-version "$vm_version" detail/"$vm"/required_versions
+vm_version=$("$VIRTUAL_DEV"/detail/"$vm"/version)
+if ! "$VIRTUAL_DEV"/detail/check-vm-version "$vm_version" "$VIRTUAL_DEV"/detail/"$vm"/required_versions
 then
-	printf-vdev-error 'current version of VirtualBox is not supported\nRequired versions are: %s' "$(cat detail/"$vm"/required_versions)"
+	printf-vdev-error 'current version of VirtualBox is not supported\nRequired versions are: %s' "$(cat "$VIRTUAL_DEV"/detail/"$vm"/required_versions)"
 	exit 1
 fi
 
 
-if ! detail/"$vm"/vm-exists "$guest_name"
+if ! "$VIRTUAL_DEV"/detail/"$vm"/vm-exists "$guest_name"
 then
 	printf-vdev-error '"%s" does not exist' "$guest_name"
 	exit 1
@@ -84,13 +88,13 @@ project_root="$VIRTUAL_DEV_WORKING_DIR"
 
 project_name=$(basename "$project_root")
 
-if detail/"$vm"/is-running "$guest_name"
+if "$VIRTUAL_DEV"/detail/"$vm"/is-running "$guest_name"
 then
 	printf-vdev-error '"%s" is currently running, please shut it down' "$guest_name"
 	exit 1
 fi
 
-detail/"$vm"/shared-folder "$project_name" "$project_root"
+"$VIRTUAL_DEV"/detail/"$vm"/shared-folder "$project_name" "$project_root"
 if [ $? != 0 ]
 then
 	printf-vdev-error 'failed to create shared folder on "%s"' "$vm"

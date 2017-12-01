@@ -1,8 +1,8 @@
 #!/bin/bash
 
-source detail/constants
-source detail/utils
-source detail/dictionary
+source "$VIRTUAL_DEV"/detail/constants
+source "$VIRTUAL_DEV"/detail/utils
+source "$VIRTUAL_DEV"/detail/dictionary
 
 
 #

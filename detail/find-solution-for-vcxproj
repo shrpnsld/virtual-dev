@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source detail/utils
+source "$VIRTUAL_DEV"/detail/utils
 
 
 #

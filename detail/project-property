@@ -1,8 +1,8 @@
 #!/bin/bash
 
-source detail/constants
-source detail/utils
-source detail/dictionary
+source "$VIRTUAL_DEV"/detail/constants
+source "$VIRTUAL_DEV"/detail/utils
+source "$VIRTUAL_DEV"/detail/dictionary
 
 
 #
@@ -35,7 +35,7 @@ sed '/<Project .*>/a\
 trap "rm -f \"$working_project_path\"" EXIT
 
 export VIRTUAL_DEV_ARGUMENTS="$guest_root_dir/$working_project_path ${msbuild_arguments[@]} /target:VDevGetProperty"
-output=$(detail/"$vm"/execute "$guest_msbuild_bat" "$guest_root_dir" "$vs_version" | trim-eoln)
+output=$("$VIRTUAL_DEV"/detail/"$vm"/execute "$guest_msbuild_bat" "$guest_root_dir" "$vs_version" | trim-eoln)
 retval=${PIPESTATUS[0]}
 if [ $retval != 0 ]
 then

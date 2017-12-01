@@ -1,8 +1,8 @@
 #!/bin/bash
 
-source detail/constants
-source detail/utils
-source detail/dictionary
+source "$VIRTUAL_DEV"/detail/constants
+source "$VIRTUAL_DEV"/detail/utils
+source "$VIRTUAL_DEV"/detail/dictionary
 
 
 #
@@ -20,7 +20,7 @@ dictionary-load "$vdev_vm_file" 'vm'
 
 printf '\n'
 printf-vdev-message 'terminating "%s"...' "$binary_name"
-output=$(detail/"$vm"/execute 'taskkill.exe' '/F' '/T' '/IM' "$binary_name" 2>&1)
+output=$("$VIRTUAL_DEV"/detail/"$vm"/execute 'taskkill.exe' '/F' '/T' '/IM' "$binary_name" 2>&1)
 if [ $? != 0 ]
 then
 	printf-vdev-error 'failed terminate "%s".\n%s' "$binary_name" "$output"

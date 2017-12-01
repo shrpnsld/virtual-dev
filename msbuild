@@ -1,11 +1,15 @@
 #!/bin/bash
 
-export VIRTUAL_DEV_WORKING_DIR=$(pwd)
-cd $(dirname $0)
+if [ -z "$VIRTUAL_DEV" ]
+then
+	export VIRTUAL_DEV=$(dirname $0)
+fi
 
-source detail/constants
-source detail/utils
-source detail/dictionary
+export VIRTUAL_DEV_WORKING_DIR=$PWD
+
+source "$VIRTUAL_DEV"/detail/constants
+source "$VIRTUAL_DEV"/detail/utils
+source "$VIRTUAL_DEV"/detail/dictionary
 
 
 export VIRTUAL_DEV_WORKSPACE_DIR="$VIRTUAL_DEV_WORKING_DIR/$VIRTUAL_DEV_WORKSPACE_NAME"
@@ -85,7 +89,7 @@ vs-version-for-parameters()
 	project_path=$(array-search-by-pattern '.*\.vcxproj' "${parameters[@]}")
 	if [ $? == 0 ]
 	then
-		local absolute_solution_path=$(detail/find-solution-for-vcxproj "$project_path")
+		local absolute_solution_path=$("$VIRTUAL_DEV"/detail/find-solution-for-vcxproj "$project_path")
 	fi
 
 	if [ -z "$absolute_solution_path" ]
@@ -105,7 +109,7 @@ vs-version-for-parameters()
 		return 1
 	fi
 
-	detail/vs-version "$absolute_solution_path"
+	"$VIRTUAL_DEV"/detail/vs-version "$absolute_solution_path"
 	if [ $? != 0 ]
 	then
 		return 1
@@ -152,13 +156,13 @@ fi
 
 # Checks
 
-if ! detail/"$vm"/vm-exists "$guest_name"
+if ! "$VIRTUAL_DEV"/detail/"$vm"/vm-exists "$guest_name"
 then
 	printf-vdev-error '"%s" does not exist' "$guest_name"
 	exit 1
 fi
 
-detail/"$vm"/check-vm-started
+"$VIRTUAL_DEV"/detail/"$vm"/check-vm-started
 if [ $? != 0 ]
 then
 	printf-vdev-error 'failed to start "%s"' "$guest_name"
@@ -170,7 +174,7 @@ fi
 
 vdev_guest_paths_file="$VIRTUAL_DEV_WORKSPACE_DIR/$GUEST_PATHS_FILE"
 
-detail/check-paths-file "$vdev_guest_paths_file"
+"$VIRTUAL_DEV"/detail/check-paths-file "$vdev_guest_paths_file"
 if [ $? == 2 ]
 then
 	printf-vdev-warning 'shared disk on "%s" for this workspace was changed. This may cause error during compilation. You may need to check paths in the solution.' "$guest_name"
@@ -188,13 +192,13 @@ then
 	exit 1
 fi
 
-trap 'detail/terminate MSBuild.exe' INT
+trap "$VIRTUAL_DEV/detail/terminate MSBuild.exe" INT
 
 msbuild_arguments=($(msbuild-arguments-from-parameters "$@"))
 
 # passing arguments through environment variable, because "cmd.exe" will remove "=" character from arguments like "/property:configuration=Release"
 export VIRTUAL_DEV_ARGUMENTS="${msbuild_arguments[@]}"
-detail/"$vm"/execute "$guest_msbuild_bat" "$guest_root_dir" "$vs_version" | detail/error-format-mvs-to-gcc
+"$VIRTUAL_DEV"/detail/"$vm"/execute "$guest_msbuild_bat" "$guest_root_dir" "$vs_version" | "$VIRTUAL_DEV"/detail/error-format-mvs-to-gcc
 retval=${PIPESTATUS[0]}
 if [ $retval == 1 ]
 then

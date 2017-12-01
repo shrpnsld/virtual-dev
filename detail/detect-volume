@@ -1,8 +1,8 @@
 #!/bin/bash
 
-source detail/constants
-source detail/utils
-source detail/dictionary
+source "$VIRTUAL_DEV"/detail/constants
+source "$VIRTUAL_DEV"/detail/utils
+source "$VIRTUAL_DEV"/detail/dictionary
 
 
 #
@@ -21,7 +21,7 @@ dictionary-load "$vdev_vm_file" 'vm'
 
 while [ true ]
 do
-	output=$(detail/"$vm"/execute 'net.exe' 'use')
+	output=$("$VIRTUAL_DEV"/detail/"$vm"/execute 'net.exe' 'use')
 	if [ $? == 1 ]
 	then
 		exit 1
@@ -43,7 +43,7 @@ workspace_id=$(get-workspace-id "$workspace_id_path")
 workspace_id_relative_path="$VIRTUAL_DEV_WORKSPACE_NAME\\$VIRTUAL_DEV_WORKSPACE_ID_FILE"
 while read -r disk
 do
-	output=$(detail/"$vm"/execute 'cmd.exe' '/Q' '/C' 'type' "$disk\\$workspace_id_relative_path" 2>&1 | trim-eoln) || exit 1
+	output=$("$VIRTUAL_DEV"/detail/"$vm"/execute 'cmd.exe' '/Q' '/C' 'type' "$disk\\$workspace_id_relative_path" 2>&1 | trim-eoln) || exit 1
 	if [ $? == 1 ]
 	then
 		exit 1

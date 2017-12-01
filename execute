@@ -1,11 +1,15 @@
 #!/bin/bash
 
-export VIRTUAL_DEV_WORKING_DIR=$(pwd)
-cd $(dirname $0)
+if [ -z "$VIRTUAL_DEV" ]
+then
+	export VIRTUAL_DEV=$(dirname $0)
+fi
 
-source detail/constants
-source detail/utils
-source detail/dictionary
+export VIRTUAL_DEV_WORKING_DIR=$PWD
+
+source "$VIRTUAL_DEV"/detail/constants
+source "$VIRTUAL_DEV"/detail/utils
+source "$VIRTUAL_DEV"/detail/dictionary
 
 
 export VIRTUAL_DEV_WORKSPACE_DIR="$VIRTUAL_DEV_WORKING_DIR/$VIRTUAL_DEV_WORKSPACE_NAME"
@@ -57,7 +61,7 @@ fi
 
 vdev_guest_paths_file="$VIRTUAL_DEV_WORKSPACE_DIR/$GUEST_PATHS_FILE"
 
-detail/check-paths-file "$vdev_guest_paths_file"
+"$VIRTUAL_DEV"/detail/check-paths-file "$vdev_guest_paths_file"
 if [ $? == 2 ]
 then
 	printf-vdev-warning 'shared disk on "%s" for this workspace was changed.' "$guest_name"
@@ -68,9 +72,9 @@ dictionary-load "$vdev_guest_paths_file" 'guest_root_dir' 'guest_execute_bat'
 
 # Execution
 
-trap "detail/terminate $binary_name" INT
+trap "$VIRTUAL_DEV/detail/terminate $binary_name" INT
 
 # passing arguments through environment variable, because some commands may remove characters like "=" from arguments like "/property:configuration=Release"
 export VIRTUAL_DEV_ARGUMENTS="${arguments[@]}"
-detail/"$vm"/execute "$guest_execute_bat" "$working_dir" "$binary_path"
+"$VIRTUAL_DEV"/detail/"$vm"/execute "$guest_execute_bat" "$working_dir" "$binary_path"
 
