@@ -14,7 +14,7 @@ binary_name=$1
 #
 # Main
 
-vdev_vm_file="$VIRTUAL_DEV_WORKSPACE_DIR/$VM_FILE"
+vdev_vm_file="$VIRTUAL_DEV_WORKSPACE_DIR/$VIRTUAL_DEV_VM_FILE"
 dictionary-load "$vdev_vm_file" 'vm'
 
 

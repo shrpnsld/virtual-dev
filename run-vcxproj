@@ -12,7 +12,7 @@ source "$VIRTUAL_DEV"/detail/utils
 source "$VIRTUAL_DEV"/detail/dictionary
 
 
-export VIRTUAL_DEV_WORKSPACE_DIR="$VIRTUAL_DEV_WORKING_DIR/$VIRTUAL_DEV_WORKSPACE_NAME"
+export VIRTUAL_DEV_WORKSPACE_DIR="$VIRTUAL_DEV_WORKING_DIR/$VIRTUAL_DEV_WORKSPACE"
 
 if [ ! -d "$VIRTUAL_DEV_WORKSPACE_DIR" ]
 then
@@ -218,7 +218,7 @@ check-vcxproj-properties()
 #
 # Main
 
-vdev_vm_file="$VIRTUAL_DEV_WORKSPACE_DIR/$VM_FILE"
+vdev_vm_file="$VIRTUAL_DEV_WORKSPACE_DIR/$VIRTUAL_DEV_VM_FILE"
 dictionary-load "$vdev_vm_file" 'vm' 'guest_name'
 
 
@@ -257,16 +257,15 @@ fi
 
 # Paths file
 
-vdev_guest_paths_file="$VIRTUAL_DEV_WORKSPACE_DIR/$GUEST_PATHS_FILE"
+vdev_guest_paths_file="$VIRTUAL_DEV_WORKSPACE_DIR/$VIRTUAL_DEV_GUEST_PATHS_FILE"
 
 "$VIRTUAL_DEV"/detail/check-paths-file "$vdev_guest_paths_file"
 if [ $? == 2 ]
 then
-	printf-vdev-warning 'shared disk on "%s" for this workspace was changed. This may cause an error on running project. You may need to check paths in the solution.' "$guest_name"
+	printf-vdev-warning 'shared disk on "%s" for this workspace was changed. This may cause an error on running project. You may need to check paths in the solution' "$guest_name"
 fi
 
-
-dictionary-load "$vdev_guest_paths_file" 'guest_root_dir' 'guest_msbuild_bat' 'guest_run_bat'
+dictionary-load "$vdev_guest_paths_file" 'guest_root_dir' 'guest_run_bat'
 
 
 # MVS version
@@ -284,7 +283,7 @@ fi
 project_path=$(project-path-from-parameters "$@")
 msbuild_arguments=($(msbuild-arguments-from-parameters "$@"))
 
-properties_dir="$VIRTUAL_DEV_WORKSPACE_DIR/$VCXPROJ_PROPS_FILE"
+properties_dir="$VIRTUAL_DEV_WORKSPACE_DIR/$VIRTUAL_DEV_VCXPROJ_PROPS_FILE"
 mkdir -p "$properties_dir"
 if [ $? != 0 ]
 then

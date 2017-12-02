@@ -7,7 +7,7 @@ source "$VIRTUAL_DEV"/detail/dictionary
 #
 # Main
 
-dictionary-load "$VIRTUAL_DEV_WORKSPACE_DIR/$VM_FILE" 'vm' 'vm_manage' 'guest_name'
+dictionary-load "$VIRTUAL_DEV_WORKSPACE_DIR/$VIRTUAL_DEV_VM_FILE" 'vm' 'vm_manage' 'guest_name'
 
 
 if "$VIRTUAL_DEV"/detail/"$vm"/is-running "$guest_name"

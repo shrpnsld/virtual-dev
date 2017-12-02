@@ -17,10 +17,10 @@ msbuild_arguments=(${@:4})
 #
 # Main
 
-vdev_vm_file="$VIRTUAL_DEV_WORKSPACE_DIR/$VM_FILE"
+vdev_vm_file="$VIRTUAL_DEV_WORKSPACE_DIR/$VIRTUAL_DEV_VM_FILE"
 dictionary-load "$vdev_vm_file" 'vm'
 
-vdev_guest_paths_file="$VIRTUAL_DEV_WORKSPACE_DIR/$GUEST_PATHS_FILE"
+vdev_guest_paths_file="$VIRTUAL_DEV_WORKSPACE_DIR/$VIRTUAL_DEV_GUEST_PATHS_FILE"
 dictionary-load "$vdev_guest_paths_file" 'guest_root_dir' 'guest_msbuild_bat'
 
 property_line='virtual-dev property:'

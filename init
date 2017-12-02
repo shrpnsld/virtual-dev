@@ -46,13 +46,13 @@ password=$3
 
 # Configuration
 
-export VIRTUAL_DEV_WORKSPACE_DIR="$VIRTUAL_DEV_WORKING_DIR/$VIRTUAL_DEV_WORKSPACE_NAME"
+export VIRTUAL_DEV_WORKSPACE_DIR="$VIRTUAL_DEV_WORKING_DIR/$VIRTUAL_DEV_WORKSPACE"
 
 rm -rf "$VIRTUAL_DEV_WORKSPACE_DIR"
 mkdir "$VIRTUAL_DEV_WORKSPACE_DIR"
 create-workspace-id "$VIRTUAL_DEV_WORKSPACE_DIR/$VIRTUAL_DEV_WORKSPACE_ID_FILE"
 
-vdev_vm_file="$VIRTUAL_DEV_WORKSPACE_DIR/$VM_FILE"
+vdev_vm_file="$VIRTUAL_DEV_WORKSPACE_DIR/$VIRTUAL_DEV_VM_FILE"
 
 dictionary-insert "$vdev_vm_file" 'vm' "$vm"
 dictionary-insert "$vdev_vm_file" 'vm_manage' "$vm_manage"
@@ -62,13 +62,13 @@ dictionary-insert "$vdev_vm_file" 'password' "$password"
 
 dictionary-load "$vdev_vm_file" 'vm' 'guest_name'
 
-cp -Rn "$VIRTUAL_DEV/detail/$GUEST_SCRIPTS_DIR" "$VIRTUAL_DEV_WORKSPACE_DIR/"
+cp -Rn "$VIRTUAL_DEV/detail/$VIRTUAL_DEV_GUEST_SCRIPTS_DIR" "$VIRTUAL_DEV_WORKSPACE_DIR/"
 
 
 # Checks
 
 vm_version=$("$VIRTUAL_DEV"/detail/"$vm"/version)
-if ! "$VIRTUAL_DEV"/detail/check-vm-version "$vm_version" "$VIRTUAL_DEV"/detail/"$vm"/required_versions
+if ! "$VIRTUAL_DEV"/detail/check-vm-version "$vm_version" "$VIRTUAL_DEV"/detail/"$vm"/required-versions
 then
 	printf-vdev-error 'current version of VirtualBox is not supported\nRequired versions are: %s' "$(cat "$VIRTUAL_DEV"/detail/"$vm"/required_versions)"
 	exit 1

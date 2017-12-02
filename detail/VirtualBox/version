@@ -7,7 +7,7 @@ source "$VIRTUAL_DEV"/detail/dictionary
 #
 # Main
 
-dictionary-load "$VIRTUAL_DEV_WORKSPACE_DIR/$VM_FILE" 'vm_manage'
+dictionary-load "$VIRTUAL_DEV_WORKSPACE_DIR/$VIRTUAL_DEV_VM_FILE" 'vm_manage'
 
 version=$("$vm_manage" --version)
 printf '%s\n' "${version:0:1}"

@@ -14,7 +14,7 @@ workspace_id_path=$1
 #
 # Main
 
-vdev_vm_file="$VIRTUAL_DEV_WORKSPACE_DIR/$VM_FILE"
+vdev_vm_file="$VIRTUAL_DEV_WORKSPACE_DIR/$VIRTUAL_DEV_VM_FILE"
 dictionary-load "$vdev_vm_file" 'vm'
 
 # waiting for the service to be available
@@ -40,7 +40,7 @@ done
 # searching disk with current project
 check-workspace-id "$workspace_id_path"
 workspace_id=$(get-workspace-id "$workspace_id_path")
-workspace_id_relative_path="$VIRTUAL_DEV_WORKSPACE_NAME\\$VIRTUAL_DEV_WORKSPACE_ID_FILE"
+workspace_id_relative_path="$VIRTUAL_DEV_WORKSPACE\\$VIRTUAL_DEV_WORKSPACE_ID_FILE"
 while read -r disk
 do
 	output=$("$VIRTUAL_DEV"/detail/"$vm"/execute 'cmd.exe' '/Q' '/C' 'type' "$disk\\$workspace_id_relative_path" 2>&1 | trim-eoln) || exit 1

@@ -12,7 +12,7 @@ source "$VIRTUAL_DEV"/detail/utils
 source "$VIRTUAL_DEV"/detail/dictionary
 
 
-export VIRTUAL_DEV_WORKSPACE_DIR="$VIRTUAL_DEV_WORKING_DIR/$VIRTUAL_DEV_WORKSPACE_NAME"
+export VIRTUAL_DEV_WORKSPACE_DIR="$VIRTUAL_DEV_WORKING_DIR/$VIRTUAL_DEV_WORKSPACE"
 
 if [ ! -d "$VIRTUAL_DEV_WORKSPACE_DIR" ]
 then
@@ -43,7 +43,7 @@ arguments=("${@:3}")
 #
 # Main
 
-vdev_vm_file="$VIRTUAL_DEV_WORKSPACE_DIR/$VM_FILE"
+vdev_vm_file="$VIRTUAL_DEV_WORKSPACE_DIR/$VIRTUAL_DEV_VM_FILE"
 dictionary-load "$vdev_vm_file" 'vm' 'guest_name'
 
 
@@ -59,7 +59,7 @@ fi
 
 # Paths file
 
-vdev_guest_paths_file="$VIRTUAL_DEV_WORKSPACE_DIR/$GUEST_PATHS_FILE"
+vdev_guest_paths_file="$VIRTUAL_DEV_WORKSPACE_DIR/$VIRTUAL_DEV_GUEST_PATHS_FILE"
 
 "$VIRTUAL_DEV"/detail/check-paths-file "$vdev_guest_paths_file"
 if [ $? == 2 ]

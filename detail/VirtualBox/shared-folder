@@ -15,7 +15,7 @@ path=$2
 #
 # Main
 
-dictionary-load "$VIRTUAL_DEV_WORKSPACE_DIR/$VM_FILE" 'vm_manage' 'guest_name'
+dictionary-load "$VIRTUAL_DEV_WORKSPACE_DIR/$VIRTUAL_DEV_VM_FILE" 'vm_manage' 'guest_name'
 
 # if there is a shared folder already VBoxManage prints message, but returns without error
 output=$("$vm_manage" sharedfolder add "$guest_name" --name "$name" --hostpath "$path" --automount 2>&1)

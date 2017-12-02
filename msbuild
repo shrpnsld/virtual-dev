@@ -12,7 +12,7 @@ source "$VIRTUAL_DEV"/detail/utils
 source "$VIRTUAL_DEV"/detail/dictionary
 
 
-export VIRTUAL_DEV_WORKSPACE_DIR="$VIRTUAL_DEV_WORKING_DIR/$VIRTUAL_DEV_WORKSPACE_NAME"
+export VIRTUAL_DEV_WORKSPACE_DIR="$VIRTUAL_DEV_WORKING_DIR/$VIRTUAL_DEV_WORKSPACE"
 
 if [ ! -d "$VIRTUAL_DEV_WORKSPACE_DIR" ]
 then
@@ -133,7 +133,7 @@ msbuild-arguments-from-parameters()
 #
 # Main
 
-vdev_vm_file="$VIRTUAL_DEV_WORKSPACE_DIR/$VM_FILE"
+vdev_vm_file="$VIRTUAL_DEV_WORKSPACE_DIR/$VIRTUAL_DEV_VM_FILE"
 dictionary-load "$vdev_vm_file" 'vm' 'guest_name'
 
 
@@ -172,12 +172,12 @@ fi
 
 # Paths file
 
-vdev_guest_paths_file="$VIRTUAL_DEV_WORKSPACE_DIR/$GUEST_PATHS_FILE"
+vdev_guest_paths_file="$VIRTUAL_DEV_WORKSPACE_DIR/$VIRTUAL_DEV_GUEST_PATHS_FILE"
 
 "$VIRTUAL_DEV"/detail/check-paths-file "$vdev_guest_paths_file"
 if [ $? == 2 ]
 then
-	printf-vdev-warning 'shared disk on "%s" for this workspace was changed. This may cause error during compilation. You may need to check paths in the solution.' "$guest_name"
+	printf-vdev-warning 'shared disk on "%s" for this workspace was changed. This may cause an error during compilation. You may need to check paths in the solution' "$guest_name"
 fi
 
 dictionary-load "$vdev_guest_paths_file" 'guest_root_dir' 'guest_msbuild_bat'
@@ -188,7 +188,7 @@ dictionary-load "$vdev_guest_paths_file" 'guest_root_dir' 'guest_msbuild_bat'
 vs_version=$(vs-version-for-parameters "$@")
 if [ $? != 0 ]
 then
-	printf-vdev-error 'failed to detect Visual Studio version. Specify it explicitly.'
+	printf-vdev-error 'failed to detect Visual Studio version. Specify it explicitly'
 	exit 1
 fi
 
@@ -202,7 +202,7 @@ export VIRTUAL_DEV_ARGUMENTS="${msbuild_arguments[@]}"
 retval=${PIPESTATUS[0]}
 if [ $retval == 1 ]
 then
-	printf-vdev-error 'failed to execute build command.'
+	printf-vdev-error 'failed to execute build command'
 	exit 1
 fi
 
