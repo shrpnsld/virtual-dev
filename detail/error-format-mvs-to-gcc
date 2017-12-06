@@ -1,12 +1,16 @@
 #!/bin/bash
 
-remove_disk_letter='s/  [A-Z]\:\\/  /'
+remove_disk_letter='s/  [A-Za-z]\:\\/  /'
 path_dos_to_unix=':again
 	s/\(^[^:]*\)\\/\1\//
 	/\(^[^:]*\)\\/b again'
-file_path_pattern='[A-Za-z0-9\s\.\/\-\_\+\=\(\)\{\}]*'
-error_vs_to_gcc='s/^\ *\('"$file_path_pattern"'\)(\([0-9]*\)): error [^:]*:/\1:\2: error:/'
-warning_vs_to_gcc='s/^\ *\('"$file_path_pattern"'\)(\([0-9]*\)): warning [^:]*:/\1:\2: warning:/'
+file_path_pattern='[-A-Za-z0-9\.\/\_\+\=\(\)\{\}][-A-Za-z0-9\.\/\_\+\=\(\)\{\}\ ]*'
+error_vs_to_gcc='s/^\ *\('"$file_path_pattern"'\)(\([0-9][0-9]*\)): error [^:][^:]*:/\1:\2: error:/'
+fatal_error_vs_to_gcc='s/^\ *\('"$file_path_pattern"'\)(\([0-9][0-9]*\)): fatal error [^:][^:]*:/\1:\2: fatal error:/'
+warning_vs_to_gcc='s/^\ *\('"$file_path_pattern"'\)(\([0-9][0-9]*\)): warning [^:][^:]*:/\1:\2: warning:/'
+note_vs_to_gcc='s/^\ *\('"$file_path_pattern"'\)(\([0-9][0-9]*\)): note:/\1:\2: note:/'
 
-sed -e "$remove_disk_letter" -e "$path_dos_to_unix" -e "$error_vs_to_gcc" -e "$warning_vs_to_gcc" -e $'s/\r$//'
+# Xcode 9.1 highlighs any line containing "No such file or directory" (matching case) as an error, so just making first word lowercase %)
+no_such_file='s/^\ *\('"$file_path_pattern"'.*: [a-z][a-z\ ]*[a-z] [^:]*: .*\) No such file or directory\(.*\)/\1 no such file or directory\2/'
 
+sed -e "$remove_disk_letter" -e "$path_dos_to_unix" -e "$no_such_file" -e "$error_vs_to_gcc" -e "$fatal_error_vs_to_gcc" -e "$warning_vs_to_gcc" -e "$note_vs_to_gcc" -e $'s/\r$//'
