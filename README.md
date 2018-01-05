@@ -1,6 +1,6 @@
 # virtual-dev
 
-Provides MSBuild to macOS/OS X through VirtualBox, thus helps make crossplatform development easier by minimizing switching between development environments.
+Provides MSBuild to macOS through VirtualBox, thus helps make crossplatform development easier by minimizing switching between development environments.
 
 
 
@@ -18,7 +18,7 @@ $ # Otherwise use "Path/To/virtual-dev/<command>" instead of "vdev-<command>"
 $ # Use it
 $ cd /Project/Root/
 $
-$ # Add shared folder for current path
+$ # Add shared folder in guest OS for current path
 $ # and initialize virtual-dev workspace
 $ vdev-init GuestMachineName Username password123
 $
@@ -36,7 +36,7 @@ virtual-dev workspace files are stored in `Project/Root/.vdev/` folder.
 
 ### Requires
 
-* Host macOS or OS X *(may also work with host Linux)*
+* Host macOS *(may also work with host Linux, who knows)*
 * bash 3.2 or later
 * VirtualBox 5.x
 * Guest Windows 7 or later with guest additions installed
@@ -49,7 +49,7 @@ virtual-dev workspace files are stored in `Project/Root/.vdev/` folder.
 
 ### Build
 
-Add **External Build System** target and use following settings for it:
+Add "External Build System" target and use following settings for it:
 
 * Build Tool: `/Absolute/Path/To/virtual-dev/msbuild`
 * Arguments: `<arguments to vdev-msbuild>`
@@ -62,7 +62,7 @@ Add **External Build System** target and use following settings for it:
 Edit target scheme using following settings:
 
 * Executable: `/Absolute/Path/To/virtual-dev/msbuild`
-* **Debug executable** option should be turned off
+* "Debug executable" option should be turned off
 
 ![](./doc/SchemeRunInfo.png)
 
@@ -82,4 +82,4 @@ virtual-dev converts Microsoft Visual Studio errors to GCC error format, thus Xc
 
 Adding or removing shared folder for virtual machine may change disk letter for other shared folders on that machine. This happens because  mounting order does not depend to adding/removing order. virtual-dev will detect disk change for workspace and show appropriate warning message, but only once.
 
-virtual-dev catches `SIGINT` and kills process**es** that have same name with the one that was started by script. *(It's hard to detect the exact process that was started by script, but in most cases current implementation will not cause issues, as process name would be unique, so no other processes will be killed)*
+virtual-dev catches `SIGINT` and kills processes that have same name with the one that was started by the script. *(It's hard to detect the exact process that was started by the script, but in most cases current implementation will not cause any issues, as long as the process name will be unique)*
