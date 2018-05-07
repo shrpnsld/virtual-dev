@@ -21,18 +21,32 @@ vm_manage=$(which "${!vm}")
 
 
 HELP_MESSAGE=\
-'Usage:
-	vdev-init <guest-name> <user> <password>
+'Initializes virtual-dev workspace
+
+Usage:
+    vdev-init <guest-name> <user> <password>
+    vdev-init -h | --help
+
+Parameters:
+    <guest-name>  Name of the guest machine
+    <user>        User name in the guest machine
+    <password>    Password for user in the guest machine
+    -h | --help   Show this message
 '
 
 
 #
 # Parameters
 
+if [ $# == 1 ] && ([ $1 == '-h' ] || [ $1 == '--help' ])
+then
+	printf '%s\n' "$HELP_MESSAGE"
+	exit
+fi
+
 if [ $# -ne 3 ]
 then
-	printf-vdev-error 'wrong number of arguments'
-	printf '%s\n' "$HELP_MESSAGE"
+	printf-vdev-error 'wrong number of arguments\nUse '"'"'-h'"'"' or '"'"'--help'"'"' to get help'
 	exit 1
 fi
 

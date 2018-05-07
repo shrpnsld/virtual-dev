@@ -22,17 +22,20 @@ fi
 
 
 HELP_MESSAGE=\
-'Usage:
-    vdev-msbuild [<MSBuild-arguments>...]                (1)
-    vdev-msbuild <MVS-version> [<MSBuild-arguments>...]  (2)
+'Runs MSBuild with given arguments
+
+Usage:
+    vdev-msbuild [<MSBuild-arguments>...]
+    vdev-msbuild <MVS-version> [<MSBuild-arguments>...]
+	vdev-msbuild -h | --help
 
 Parameters:
-    <MSBuild-arguments>        Arguments for MSBuild.
-    <MVS-version>              Specify Visual Studio version (not year) explicitly.
+    <MSBuild-arguments>  Arguments for MSBuild.
+    <MVS-version>        Specify Visual Studio version (not year) explicitly.
+    -h | --help          Show this message
 
 Notes:
-    Form (1) should have .sln or .vcxproj file path in it'"'"'s arguments.
-    Form (2) does not pass <MVS-version> to MSBuild.
+    If no MVS version was specified, arguments should specify path to .sln or .vcxproj file. This way virtual-dev can detect MVS version automatically.
 
     Solution or project paths should be relative to project root.
 '
@@ -141,14 +144,19 @@ dictionary-load "$vdev_vm_file" 'vm' 'guest_name'
 
 if [ $# \< 1 ]
 then
-	printf-vdev-error 'too few arguments'
-	printf '%s\n' "$HELP_MESSAGE"
+	printf-vdev-error 'too few arguments\nUse '"'"'-h'"'"' or '"'"'--help'"'"' to get help'
 	exit 1
+fi
+
+if [ $# == 1 ] && ([ $1 == '-h' ] || [ $1 == '--help' ])
+then
+	printf '%s\n' "$HELP_MESSAGE"
+	exit
 fi
 
 if ! validate-parameters "$@"
 then
-	printf-vdev-error 'bad arguments'
+	printf-vdev-error 'bad arguments\nUse '"'"'-h'"'"' or '"'"'--help'"'"' to get help'
 	printf '%s\n' "$HELP_MESSAGE"
 	exit 1
 fi

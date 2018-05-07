@@ -22,13 +22,17 @@ fi
 
 
 HELP_MESSAGE=\
-'Usage:
+'Runs executable in guest machine
+
+Usage:
     vdev-execute <working-dir> <executable> [<parameters>...]
+    vdev-execute -h | --help
 
 Parameters:
-    <working-dir>      Working directory for executable.
-    <executable>       Executable name or path.
-    <parameters>       Parameters for executable.
+    <working-dir>  Working directory for executable.
+    <executable>   Executable name or path.
+    <parameters>   Parameters for executable.
+    -h | --help    Show this message
 '
 
 
@@ -49,10 +53,15 @@ dictionary-load "$vdev_vm_file" 'vm' 'guest_name'
 
 # Checks
 
+if [ $# == 1 ] && ([ $1 == '-h' ] || [ $1 == '--help' ])
+then
+	printf '%s\n' "$HELP_MESSAGE"
+	exit
+fi
+
 if [ $# \< 2 ]
 then
-	printf-vdev-error 'bad arguments'
-	printf '%s\n' "$HELP_MESSAGE"
+	printf-vdev-error 'too few arguments\nUse '"'"'-h'"'"' or '"'"'--help'"'"' to get help'
 	exit 1
 fi
 

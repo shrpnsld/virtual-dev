@@ -22,19 +22,23 @@ fi
 
 
 HELP_MESSAGE=\
-'Usage:
-    vdev-run-vcxproj <Path/To/Project.vcxproj> [<MSBuild-arguments>...]                         (1)
-    vdev-run-vcxproj <Path/To/Solution.sln> <Path/To/Project.vcxproj> [<MSBuild-arguments>...]  (2)
-    vdev-run-vcxproj <MVS-version> <Path/To/Project.vcxproj> [<MSBuild-arguments>...]           (3)
+'Runs .vcxproj target
+
+Usage:
+    vdev-run-vcxproj <Path/To/Project.vcxproj> [<MSBuild-arguments>...]
+    vdev-run-vcxproj <Path/To/Solution.sln> <Path/To/Project.vcxproj> [<MSBuild-arguments>...]
+    vdev-run-vcxproj <MVS-version> <Path/To/Project.vcxproj> [<MSBuild-arguments>...]
+    vdev-run-vcxproj -h | --help
 
 Parameters:
     <Path/To/Project.vcxproj>  Path to .vcxproj file; Visual Studio version will be detected by searching corresponding solution file.
     <Path/To/Solution.sln>     Specify solution file to detect Visual Studio version from it.
     <MVS-version>              Specify Visual Studio version explicitly.
     <MSBuild-arguments>        Arguments for MSBuild.
+    -h | --help                Show this message
 
 Notes:
-    Form (1) passes it'"'"'s first argument to MSBuild.
+    <Path/To/Project.vcxproj> is passed to MSBuild as a first argument
 
     "Paths/To/Some.thing" should be relative to project root.
 '
@@ -226,15 +230,19 @@ dictionary-load "$vdev_vm_file" 'vm' 'guest_name'
 
 if [ $# \< 1 ]
 then
-	printf-vdev-error 'too few arguments'
-	printf '%s\n' "$HELP_MESSAGE"
+	printf-vdev-error 'too few arguments\nUse '"'"'-h'"'"' or '"'"'--help'"'"' to get help'
 	exit 1
+fi
+
+if [ $# == 1 ] && ([ $1 == '-h' ] || [ $1 == '--help' ])
+then
+	printf '%s\n' "$HELP_MESSAGE"
+	exit
 fi
 
 if ! validate-parameters "$@"
 then
-	printf-vdev-error 'bad arguments'
-	printf '%s\n' "$HELP_MESSAGE"
+	printf-vdev-error 'bad arguments\nUse '"'"'-h'"'"' or '"'"'--help'"'"' to get help'
 	exit 1
 fi
 
