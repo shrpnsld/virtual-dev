@@ -151,7 +151,7 @@ find-vcxproj-properties-file()
 	local properties_files=($(grep --line-regexp --fixed-strings --recursive --files-with-matches --no-messages "#$header" "$properties_dir"))
 	if [ "${#properties_files[@]}" == 0 ]
 	then
-		file_name=$(next-properties-file-name "$properties_dir")
+		local file_name=$(next-properties-file-name "$properties_dir")
 		printf '%s\n' "$properties_dir/$file_name"
 		return
 	fi
@@ -283,11 +283,11 @@ fi
 project_path=$(project-path-from-parameters "$@")
 msbuild_arguments=($(msbuild-arguments-from-parameters "$@"))
 
-properties_dir="$VIRTUAL_DEV_WORKSPACE_DIR/$VIRTUAL_DEV_VCXPROJ_PROPS_FILE"
+properties_dir="$VIRTUAL_DEV_WORKSPACE_DIR/$VIRTUAL_DEV_VCXPROJ_PROPERTIES_DIR"
 mkdir -p "$properties_dir"
 if [ $? != 0 ]
 then
-	printf_vdev_error 'failed to create cache folder "%s"' "$properties_dir"
+	printf-vdev-error 'failed to create cache folder "%s"' "$properties_dir"
 	exit 1
 fi
 

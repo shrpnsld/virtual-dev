@@ -23,7 +23,7 @@ $ # and initialize virtual-dev workspace
 $ vdev-init GuestMachineName Username password123
 $
 $ # Call MSBuild to build project
-$ vdev-msbuild Path/To/Project.vcxproj /t:Build /p:configuration=Debug
+$ vdev-msbuild Path/To/Project.vcxproj /p:configuration=Debug
 $
 $ # Run project
 $ vdev-run-vcxproj Path/To/Project.vcxproj /p:configuration=Debug
