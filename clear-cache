@@ -1,0 +1,101 @@
+#!/bin/bash
+
+if [ -z "$VIRTUAL_DEV" ]
+then
+	export VIRTUAL_DEV=$(dirname $0)
+fi
+
+export VIRTUAL_DEV_WORKING_DIR=$PWD
+
+source "$VIRTUAL_DEV"/detail/constants
+source "$VIRTUAL_DEV"/detail/utils
+source "$VIRTUAL_DEV"/detail/dictionary
+
+
+export VIRTUAL_DEV_WORKSPACE_DIR="$VIRTUAL_DEV_WORKING_DIR/$VIRTUAL_DEV_WORKSPACE"
+
+if [ ! -d "$VIRTUAL_DEV_WORKSPACE_DIR" ]
+then
+	printf-vdev-error 'current path doesn'"'"'t have any virtual-dev workspace'
+	exit 1
+fi
+
+
+HELP_MESSAGE=\
+'Removes cache files created by '"'"'vdev-run-vcxproj'"'"'
+
+Usage:
+    vdev-clear-cache --all
+    vdev-clear-cache [<MSBuild-arguments>...]
+    vdev-clear-cache -h | --help
+
+Parameters:
+    --all                Remove all cache files.
+    <MSBuild-arguments>  Arguments set for which cache should be deleted.
+    -h | --help          Show this message.
+'
+
+
+#
+# Functions
+
+find-vcxproj-properties-file()
+{
+	local properties_dir=$1
+	local header=$2
+
+	local properties_files=($(grep --line-regexp --fixed-strings --recursive --files-with-matches --no-messages "#$header" "$properties_dir"))
+	if [ "${#properties_files[@]}" == 0 ]
+	then
+		return 1
+	fi
+
+	printf '%s\n' "${properties_files[0]}"
+}
+
+
+#
+# Main
+
+#
+# Parameters
+
+if [ $# == 0 ]
+then
+	printf-vdev-error 'too few arguments\nUse '"'"'-h'"'"' or '"'"'--hel'"'"'p to get help'
+	exit 1
+fi
+
+if [ $# == 1 ] && ([ $1 == '-h' ] || [ $1 == '--help' ])
+then
+	printf '%s\n' "$HELP_MESSAGE"
+	exit
+fi
+
+properties_dir="$VIRTUAL_DEV_WORKSPACE_DIR/$VIRTUAL_DEV_VCXPROJ_PROPERTIES_DIR"
+if [ $# == 1 ] && [ $1 == '--all' ]
+then
+	printf-vdev-message 'removing all cache files in "%s"' "$properties_dir/"
+	rm "$properties_dir/"* 2> /dev/null
+	if [ $? != 0 ]
+	then
+		printf-vdev-error 'failed to remove cache files'
+	fi
+else
+	msbuild_arguments="$@"
+	properties_file_path=$(find-vcxproj-properties-file "$properties_dir" "${msbuild_arguments[@]}")
+	if [ $? != 0 ]
+	then
+		printf-vdev-error 'no cache file found for MSBuild arguments:\n%s' "${msbuild_arguments[@]}"
+		exit 1
+	fi
+
+	printf-vdev-message 'removing cache file "%s" for MSBuild arguments:\n%s' "$properties_file_path" "${msbuild_arguments[@]}"
+	rm "$properties_file_path" 2> /dev/null
+	if [ $? != 0 ]
+	then
+		printf-vdev-error 'failed to remove cache files'
+		exit 1
+	fi
+fi
+
