@@ -79,9 +79,9 @@ validate-parameters()
 
 vs-version-for-parameters()
 {
+	local first_parameter=$1
 	local parameters=("$@")
 
-	local first_parameter=${parameters[@]}
 	if [[ $first_parameter =~ ^[0-9]+$ ]]
 	then
 		printf '%s\n' "$first_parameter"
@@ -191,7 +191,7 @@ fi
 dictionary-load "$vdev_guest_paths_file" 'guest_root_dir' 'guest_msbuild_bat'
 
 
-# msbuild
+# MVS version
 
 vs_version=$(vs-version-for-parameters "$@")
 if [ $? != 0 ]
@@ -199,6 +199,9 @@ then
 	printf-vdev-error 'failed to detect Visual Studio version. Specify it explicitly'
 	exit 1
 fi
+
+
+# MSbuild
 
 trap "$VIRTUAL_DEV/detail/terminate MSBuild.exe" INT
 
