@@ -28,11 +28,6 @@ find-upward()
 
 	while true
 	do
-		if [ "$where" == "$VIRTUAL_DEV_WORKING_DIR" ]
-		then
-			break
-		fi
-
 		local solution_files=($(find "$where" -maxdepth 1 -type f -name "$pattern"))
 		for solution_file in "${solution_files[@]}"
 		do
@@ -42,6 +37,11 @@ find-upward()
 				return
 			fi
 		done
+
+		if [ "$where" == "$VIRTUAL_DEV_WORKING_DIR" ]
+		then
+			break
+		fi
 
 		where=$(up "$where")
 	done
