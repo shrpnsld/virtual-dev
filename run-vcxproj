@@ -47,6 +47,19 @@ Notes:
 #
 # Functions
 
+make-header()
+{
+	local project=$1
+	local parameters=("${@:2}")
+
+	local header
+	header=($(printf '%s\n' "${parameters[@]}" | sort))
+	printf '%s ' "$project"
+	printf '%s ' "${header[@]}"
+	printf '\n'
+}
+
+
 validate-parameters()
 {
 	local first_parameter=$1
@@ -166,9 +179,10 @@ find-vcxproj-properties-file()
 
 cache-vcxproj-properties()
 {
-	local vs_version=$1
-	local project_path=$2
-	local msbuild_arguments=("${@:3}")
+	local header=$1
+	local vs_version=$2
+	local project_path=$3
+	local msbuild_arguments=("${@:4}")
 
 	local OutDir
 	OutDir=$("$VIRTUAL_DEV"/detail/project-property "$vs_version" "$project_path" 'OutDir' "${msbuild_arguments[@]}")
@@ -207,7 +221,7 @@ check-vcxproj-properties()
 	local properties_dir=$3
 	local msbuild_arguments=("${@:4}")
 
-	local header="$project_path ${msbuild_arguments[@]}"
+	local header=$(make-header "$project_path" "${msbuild_arguments[@]}")
 	local properties_file_path=$(find-vcxproj-properties-file "$properties_dir" "$header")
 	if [ ! "$VIRTUAL_DEV_WORKING_DIR/$project_path" -nt "$properties_file_path" ]
 	then
@@ -215,7 +229,7 @@ check-vcxproj-properties()
 		return
 	fi
 
-	cache-vcxproj-properties "$vs_version" "$project_path" "${msbuild_arguments[@]}"
+	cache-vcxproj-properties "$header" "$vs_version" "$project_path" "${msbuild_arguments[@]}"
 }
 
 
