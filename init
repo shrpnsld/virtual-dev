@@ -84,7 +84,7 @@ cp -Rn "$VIRTUAL_DEV/detail/$VIRTUAL_DEV_GUEST_SCRIPTS_DIR" "$VIRTUAL_DEV_WORKSP
 vm_version=$("$VIRTUAL_DEV"/detail/"$vm"/version)
 if ! "$VIRTUAL_DEV"/detail/check-vm-version "$vm_version" "$VIRTUAL_DEV"/detail/"$vm"/required-versions
 then
-	printf-vdev-error 'current version of VirtualBox is not supported\nRequired versions are: %s' "$(cat "$VIRTUAL_DEV"/detail/"$vm"/required_versions)"
+	printf-vdev-error 'current version of VirtualBox is not supported\nRequired versions are: %s' "$(cat "$VIRTUAL_DEV"/detail/"$vm"/required-versions)"
 	exit 1
 fi
 
